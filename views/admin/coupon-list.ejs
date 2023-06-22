@@ -1,0 +1,209 @@
+<%-include('../layouts/adminHeader') %>
+
+
+            <!-- END HEADER DESKTOP-->
+
+            <!-- MAIN CONTENT-->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- DATA TABLE -->
+                                <h3 class="title-5 m-b-35">coupon Details</h3>
+                                <div class="table-data__tool">
+                                    <div class="table-data__tool-right">
+                                        <a href="/admin/addcoupon "><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                            <i class="zmdi zmdi-plus"></i>Add Coupon</button></a>
+                                    </div>
+                                    <div class="table-data__tool-right">
+                                        <a href="/admin/addoffer "><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                            <i class="zmdi zmdi-plus"></i>Add Coupon</button></a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive table-responsive-data2">
+                                    <table class="table table-data2">
+                                        <thead>
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Type</th>
+                                                <th>Value</th>
+                                                <th>Min. Purchase</th>
+                                                <th>Max Discount</th>
+                                                <th>Status</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            <%
+                    if(coupon.length > 0){
+
+                        for(let i=0; i<coupon.length; i++){
+                            %>
+
+                            <tr>
+                                <tr class="tr-shadow">
+                                    <td><%= coupon[i].coupon_code %></td>
+                                    <td><%= coupon[i].coupon_type %></td>
+                                    <td><%= coupon[i].coupon_value %></td>
+                                    <td class="desc"><%= coupon[i].min_purchase %></td>
+                                    <td><%= coupon[i].max_discount %></td>
+                                    <td class="text-success"><%= coupon[i].coupon_status %></td>
+                                    <td>
+                                        <div class="table-data-feature">
+                                            <div class="item">
+                                                <a href="/admin/editcoupon?couponid=<%= coupon[i]._id %>" >
+                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i class="zmdi zmdi-edit"></i>
+                                                    </button></a>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tr>
+                            <tr class="spacer"></tr>
+                        <%
+                        }
+
+                    }
+                    else{
+                        %>
+                            <tr>
+                                <td colspan="5">Users Not found</td>
+                            </tr>
+                        <%
+                    }
+               
+               %>
+                                            <!-- <tr class="tr-shadow">
+                                                <td>
+                                                    <label class="au-checkbox">
+                                                        <input type="checkbox">
+                                                        <span class="au-checkmark"></span>
+                                                    </label>
+                                                </td>
+                                                <td>Lori Lynch</td>
+                                                <td>
+                                                    <span class="block-email">john@example.com</span>
+                                                </td>
+                                                <td class="desc">iPhone X 64Gb Grey</td>
+                                                <td>2018-09-29 05:57</td>
+                                                <td>
+                                                    <span class="status--process">Processed</span>
+                                                </td>
+                                                <td>$999.00</td>
+                                                <td>
+                                                    <div class="table-data-feature">
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                            <i class="zmdi zmdi-mail-send"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                            <i class="zmdi zmdi-edit"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                                            <i class="zmdi zmdi-delete"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="More">
+                                                            <i class="zmdi zmdi-more"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="spacer"></tr>
+                                            <tr class="tr-shadow">
+                                                <td>
+                                                    <label class="au-checkbox">
+                                                        <input type="checkbox">
+                                                        <span class="au-checkmark"></span>
+                                                    </label>
+                                                </td>
+                                                <td>Lori Lynch</td>
+                                                <td>
+                                                    <span class="block-email">lyn@example.com</span>
+                                                </td>
+                                                <td class="desc">iPhone X 256Gb Black</td>
+                                                <td>2018-09-25 19:03</td>
+                                                <td>
+                                                    <span class="status--denied">Denied</span>
+                                                </td>
+                                                <td>$1199.00</td>
+                                                <td>
+                                                    <div class="table-data-feature">
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                            <i class="zmdi zmdi-mail-send"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                            <i class="zmdi zmdi-edit"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                                            <i class="zmdi zmdi-delete"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="More">
+                                                            <i class="zmdi zmdi-more"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="spacer"></tr>
+                                            <tr class="tr-shadow">
+                                                <td>
+                                                    <label class="au-checkbox">
+                                                        <input type="checkbox">
+                                                        <span class="au-checkmark"></span>
+                                                    </label>
+                                                </td>
+                                                <td>Lori Lynch</td>
+                                                <td>
+                                                    <span class="block-email">doe@example.com</span>
+                                                </td>
+                                                <td class="desc">Camera C430W 4k</td>
+                                                <td>2018-09-24 19:10</td>
+                                                <td>
+                                                    <span class="status--process">Processed</span>
+                                                </td>
+                                                <td>$699.00</td>
+                                                <td>
+                                                    <div class="table-data-feature">
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Send">
+                                                            <i class="zmdi zmdi-mail-send"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                            <i class="zmdi zmdi-edit"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                                            <i class="zmdi zmdi-delete"></i>
+                                                        </button>
+                                                        <button class="item" data-toggle="tooltip" data-placement="top" title="More">
+                                                            <i class="zmdi zmdi-more"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr> -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- END DATA TABLE -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="copyright">
+                                    <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+<%-include('../layouts/adminFooter') %>
+
+

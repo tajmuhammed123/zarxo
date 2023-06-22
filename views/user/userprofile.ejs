@@ -1,0 +1,200 @@
+<%-include('../layouts/userHeader') %>
+
+	<!-- Title page -->
+	<section class="bg-img1 txt-center p-lr-15 p-tb-80" style="background-image: url('images/bg-01.jpg');">
+		<h2 class="ltext-105 cl0 txt-center">
+			Profile
+		</h2>
+	</section>
+
+
+<section class="vh-100" style="background-color: #f4f5f7;">
+    <div class="container py-1 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100 m-t-20">
+        <div class="col col-lg-6 mb-4 mb-lg-0">
+          <div class="card mb-3" style="border-radius: .5rem;">
+            <div class="row g-0">
+              <div class="col-md-4 gradient-custom text-center text-white"
+                style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                <div class="m-t-25">
+                    <img src="https://img.icons8.com/bubbles/100/000000/user.png" class="img-radius" alt="User-Profile-Image">
+                </div>
+                    <h3><%= user.name %></h5>
+                    <p><%= user.username %></p>
+                    <a href="/edituser"><i class="far fa-edit mb-5"></i></a>
+              </div>
+              <div class="col-md-8">
+                <div class="card-body p-4">
+                  <h6>Information</h6>
+                  <hr class="mt-0 mb-4">
+                  <div class="row pt-1">
+                    <div class="col-6 mb-3">
+                      <h6>Email</h6>
+                      <p class="text-muted"><%= user.email %></p>
+                    </div>
+                    <div class="col-6 mb-3">
+                      <h6>Phone</h6>
+                      <p class="text-muted"><%= user.mobile %></p>
+                    </div>
+                  </div>
+                  <h6>Email Verification</h6>
+                  <hr class="mt-0 mb-4">
+                  <% 
+                    if(user.is_verified){ %>
+                        <div class="row pt-1">
+                            <div class="col-6 mb-3">
+                              <h6>Verfied</h6>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <h6>Most Viewed</h6>
+                            </div>
+                          </div>
+                          <%
+                    }else{ %>
+                        <div class="row pt-1">
+                            <div class="col-6 mb-3">
+                              <h6>Not Verfied</h6>
+                            </div>
+                            <div class="col-6 mb-3">
+                              <a href="/userverify?email=<%= user.email %>&&name=<%= user.name %> ">verify email</a>
+                            </div>
+                          </div>
+                          <div class="mb-3">
+                            <% if(message) { %>
+                                <p class="text-danger"><%= message %></p>
+                            <% } %>
+                        </div>
+                          <%
+                    }
+                  %>
+                  <div class="d-flex justify-content-start">
+                    <h6>Edit Address: <a href="/addresslist"><i class="far fa-edit mb-5"></i></a></h6>
+                    <!-- <a href="#!"><i class="fab fa-facebook-f fa-lg m-r-10"></i></a>
+                    <a href="#!"><i class="fab fa-twitter fa-lg m-r-10"></i></a>
+                    <a href="#!"><i class="fab fa-instagram fa-lg"></i></a> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <a href="/logout">
+                <button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
+                    Log Out
+                </button>
+            </a>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%-include('../layouts/userFooter') %>
+
+  <!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+        <script src="vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+        <script src="vendor/bootstrap/js/popper.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+        <script src="vendor/select2/select2.min.js"></script>
+        <script>
+            $(".js-select2").each(function(){
+                $(this).select2({
+                    minimumResultsForSearch: 20,
+                    dropdownParent: $(this).next('.dropDownSelect2')
+                });
+            })
+        </script>
+    <!--===============================================================================================-->
+        <script src="vendor/daterangepicker/moment.min.js"></script>
+        <script src="vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+        <script src="vendor/slick/slick.min.js"></script>
+        <script src="js/slick-custom.js"></script>
+    <!--===============================================================================================-->
+        <script src="vendor/parallax100/parallax100.js"></script>
+        <script>
+            $('.parallax100').parallax100();
+        </script>
+    <!--===============================================================================================-->
+        <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+        <script>
+            $('.gallery-lb').each(function() { // the containers for all your galleries
+                $(this).magnificPopup({
+                    delegate: 'a', // the selector for gallery item
+                    type: 'image',
+                    gallery: {
+                        enabled:true
+                    },
+                    mainClass: 'mfp-fade'
+                });
+            });
+        </script>
+    <!--===============================================================================================-->
+        <script src="vendor/isotope/isotope.pkgd.min.js"></script>
+    <!--===============================================================================================-->
+        <script src="vendor/sweetalert/sweetalert.min.js"></script>
+        <script>
+            $('.js-addwish-b2').on('click', function(e){
+                e.preventDefault();
+            });
+    
+            $('.js-addwish-b2').each(function(){
+                var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
+                $(this).on('click', function(){
+                    swal(nameProduct, "is added to wishlist !", "success");
+    
+                    $(this).addClass('js-addedwish-b2');
+                    $(this).off('click');
+                });
+            });
+    
+            $('.js-addwish-detail').each(function(){
+                var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
+    
+                $(this).on('click', function(){
+                    swal(nameProduct, "is added to wishlist !", "success");
+    
+                    $(this).addClass('js-addedwish-detail');
+                    $(this).off('click');
+                });
+            });
+    
+            /*---------------------------------------------*/
+    
+            $('.js-addcart-detail').each(function(){
+                var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
+                $(this).on('click', function(){
+                    swal(nameProduct, "is added to cart !", "success");
+                });
+            });
+        
+        </script>
+    <!--===============================================================================================-->
+        <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+        <script>
+            $('.js-pscroll').each(function(){
+                $(this).css('position','relative');
+                $(this).css('overflow','hidden');
+                var ps = new PerfectScrollbar(this, {
+                    wheelSpeed: 1,
+                    scrollingThreshold: 1000,
+                    wheelPropagation: false,
+                });
+    
+                $(window).on('resize', function(){
+                    ps.update();
+                })
+            });
+        </script>
+    <!--===============================================================================================-->
+        <script src="js/main.js"></script>
+
+        <script src="https://kit.fontawesome.com/25307b6d67.js" crossorigin="anonymous"></script>
+    
+    </body>
+    </html>

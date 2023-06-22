@@ -1,0 +1,124 @@
+<%-include('../layouts/userHeader') %>
+
+	<!-- Title page -->
+	<section class="bg-img1 txt-center p-lr-15 p-tb-80" style="background-image: url('images/bg-01.jpg');">
+		<h2 class="ltext-105 cl0 txt-center">
+			Address
+		</h2>
+	</section>	
+
+
+	<!-- Content page -->
+	<section class="bg0 p-t-104 p-b-116">
+		<div class="container">
+            <!-- <div class="flex-w flex-tr w-full-md m-lr-70 m-t-55 " style="width: 150px;">
+				<a href="/addaddress?userid=<%= userid._id %>"><button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+					Add Address
+				</button></a>
+			</div> -->
+
+                    <form action="/editaddress" method="post">
+						<div class="container main-carousel container mb-2 pb-4">
+							<div class="main-container">
+							  <button role="button" id="arrow-left" class="arrow-left border-0 text-secondary p-1 rounded">
+								<i class="fa fa-chevron-left"></i>
+							  </button>
+							  <div class="container-carousel px-3">
+								<div class="carousel">
+								  <% if (userid && userid.address) { %>
+									<% for (let i = 0; i < userid.address.length; i++) { %>
+									  <% const address = userid.address[i]; %>
+									  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0">
+										<input type="radio" name="address" value="<%=userid.address[i]._id%>" id="<%=userid.address[i]._id%>" required />
+										<label for="<%=userid.address[i]._id%>" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+										  <div class="mb-1 mt-1">
+											<div class="text-sm">
+											  <p class="stext-30 cl6 size-100 p-t-18">
+												<%= address.firstName %>
+												<%= address.secondName %> <br>
+												<%= address.houseNumber %> <br>
+												<%= address.city %> <br>
+												<%= address.state %> <br>
+												<%= address.pincode %> <br>
+											  </p>
+											</div>
+										  </div>
+										  <a class="btn btn-danger" href="/deleteaddress?addressid=<%= address._id %>">Delete</a>
+										</label>
+									  </div>
+									  
+									<% } %>
+								  <% } %>
+								  
+								</div>
+							  </div>
+						</div>
+					</div>
+                            <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+                                Edit Address
+                            </button>
+                        </div>
+						</div>
+                    </form>
+                
+		</div>
+	</section>	
+
+
+
+	<!-- Footer -->
+	<%-include('../layouts/userFooter') %>
+
+
+	<!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+	<script>
+		$(".js-select2").each(function(){
+			$(this).select2({
+				minimumResultsForSearch: 20,
+				dropdownParent: $(this).next('.dropDownSelect2')
+			});
+		})
+	</script>
+<!--===============================================================================================-->
+	<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			$(this).css('position','relative');
+			$(this).css('overflow','hidden');
+			var ps = new PerfectScrollbar(this, {
+				wheelSpeed: 1,
+				scrollingThreshold: 1000,
+				wheelPropagation: false,
+			});
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+	</script>
+<!--===============================================================================================-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKFWBqlKAGCeS1rMVoaNlwyayu0e0YRes"></script>
+	<script src="js/map-custom.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>
+

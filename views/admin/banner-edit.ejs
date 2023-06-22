@@ -1,0 +1,108 @@
+<%-include('../layouts/adminHeader') %>
+
+
+<!-- HEADER DESKTOP-->
+
+<!-- MAIN CONTENT-->
+<div class="main-content">
+  <div class="section__content section__content--p30">
+    <div class="container-fluid">
+      <div class="row product">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header">
+              <strong>Edit Banner</strong>
+            </div>
+            <div class="card-body card-block">
+              <form action="" method="post" enctype="multipart/form-data">
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="text-input" class=" form-control-label">First Text</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="text" id="text-input" name="first_text" placeholder="Text" class="form-control" value="<%= banner.first_text %>">
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="text-input" class=" form-control-label">Main Text</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="text" step="any" id="text-input" name="main_text" placeholder="Text" class="form-control" value="<%= banner.main_text %>">
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="text-input" class=" form-control-label">Button Text</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="text" id="text-input" name="button_text" placeholder="Text" class="form-control" value="<%= banner.button_text %>">
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="text-input" class=" form-control-label">First Effect</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="text" id="text-input" name="first_effect" placeholder="Stock" class="form-control" value="<%= banner.first_effect %>">
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="text-input" class=" form-control-label">Main Effect</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="text" id="text-input" name="main_effect" placeholder="Stock" class="form-control" value="<%= banner.main_effect %>">
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="text-input" class=" form-control-label">Button Effect</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="text" id="text-input" name="button_effect" placeholder="Stock" class="form-control" value="<%= banner.button_effect %>">
+                  </div>
+                </div>
+
+
+                <div class="row form-group">
+                  <div class="col col-md-5">
+                    <label for="file-input" class=" form-control-label">Banner Image</label>
+                  </div>
+                  <div class="col-12 col-md-7">
+                    <input type="file" id="file-input" name="banner_img" class="form-control-file" value="<%= banner.banner_img %>">
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa fa-dot-circle-o"></i> Submit
+                  </button>
+                </div>
+                <div class="mb-3">
+                  <% if(message) { %>
+                  <p class="text-danger"><%= message %></p>
+                  <% } %>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="copyright">
+            <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<%-include('../layouts/adminFooter') %>

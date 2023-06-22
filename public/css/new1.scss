@@ -1,0 +1,95 @@
+@import "compass/css3";
+
+*{
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  font-family:arial;
+}
+body{background-color:#616161; font-family: arial; padding: 15px;}
+/*======================*/
+
+$top :50px;
+$box-bg: #DFDFD1;
+$prime-clr: #555;
+$mark:#2FBFBF;
+.radio-box{
+  position: relative;
+  width: 300px;
+  margin:25px auto;
+  @include border-radius(4px);
+  border:1px solid #ccc;
+  @include box-shadow(0 2px 5px  rgba(0,0,0,0.4));
+  background-color:$box-bg;
+}
+.radio-label{
+  display:block;
+  color: $prime-clr;
+  font-size:24px;
+  line-height:1;
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  @include text-shadow(1px 1px 0 rgba(255,255,255,0.7));
+  @include box-shadow(0 1px 0 rgba(0,0,0,0.1));
+  cursor: pointer;
+  padding:15px 10px 15px 60px;
+  height: 50px;
+  &:last-of-type{
+    @include box-shadow(0 0 0);
+    border:none;
+  }
+}
+.radio-btn{
+  width: 100%;
+  position: relative;
+  height: 50px;
+  position: absolute;
+  top: $top;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+.marker{
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 2;
+  display: inline-block;
+  background-color: $mark;
+  top: $top;
+  left:-1px;
+  background-color: $mark;
+  @include background-image(linear-gradient(left, $mark/1.2 0%,$mark 100%));
+  @include border-radius(4px 0 0 4px);
+  @include transition(all .4s);
+   @include animation(markmove 2s);
+  &:after{
+    content: '';
+    position: absolute;
+    border:16px solid rgba(0,0,0,0);
+    border-left:15px solid $mark;
+    left: 100%;
+    top: 0;
+  }
+}
+
+@for $i from 1 through 5{
+  .radio-box .radio-btn:nth-of-type(#{$i}){
+     top :#{(-1+$i)*$top};
+    &:checked ~ .marker{
+      top :#{(-1+$i)*$top+10};
+    }
+     &:checked + .radio-label{
+       color:$mark;
+       background-color: rgba(255,255,255,0.2);
+     }
+    &:hover ~ .marker {
+      top :#{(-1+$i)*$top+10} !important;
+    }
+  }    
+}
+
+@include keyframes(markmove){
+  0% { @include translateY(-60px);}
+  50% { @include translateY(150px);}
+  100%{ @include translateY(0);}
+}

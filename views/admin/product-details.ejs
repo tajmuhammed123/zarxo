@@ -1,0 +1,118 @@
+<%-include('../layouts/adminHeader') %>
+
+
+            <!-- END HEADER DESKTOP-->
+
+            <!-- MAIN CONTENT-->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- PRODUCT DETAILS -->
+                                <h3 class="title-5 m-b-35">Product Details</h3>
+                                <div class="table-data__tool">
+                                    <div class="table-data__tool-right">
+                                        <a href="/admin/addproduct?id=<%= admin._id %>"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                            <i class="zmdi zmdi-plus"></i>Add Product</button></a>
+                                    </div>
+                                    <div class="table-data__tool-right">
+                                        <a href="/admin/category"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                            <i class=""></i>Category List</button></a>
+                                    </div>
+                                </div>
+                                <div class="table-responsive table-responsive-data2">
+                                    <table class="table table-data2">
+                                        <thead>
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Name</th>
+                                                <th>Price</th>
+                                                <th>Category</th>
+                                                <th>Stock</th>
+                                                <th>Brand</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            <%
+                    if(products.length > 0){
+
+                        for(let i=0; i<products.length; i++){
+                            %>
+
+                            <tr>
+                                <tr class="tr-shadow">
+                                    <td class="header-cart-item-img">
+                                        <img src="/admin/images/<%= products[i].product_img[0] %>" alt="IMG">
+                                    </td>
+                                    <td>
+                                        <span class="block-email"><%= products[i].product_name %></span>
+                                    </td>
+                                    <td class="desc">$<%= products[i].product_price %></td>
+                                    <td><%= products[i].product_category %></td>
+                                    <td><%= products[i].product_stock %></td>
+                                    <td><%= products[i].product_brand %></td>
+                                    <td>
+                                        <div class="table-data-feature">
+                                            <div class="item">
+                                                <a href="/admin/editproducts?id=<%= products[i]._id %>&adminid=<%= admin._id %>">
+                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                    <i class="zmdi zmdi-edit"></i>
+                                                </button></a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><div class="item">
+                                        <% if(products[i].id_disable===false) {%>
+                                            <a href="/admin/id_disable?id=<%= products[i]._id%>&id_disable=false&&adminid=<%= admin._id %>" class="btn btn-danger">Block</a>
+                                            <%}else{%>
+                                              <a href="/admin/id_undisable?id=<%= products[i]._id%>&id_disable=true&&adminid=<%= admin._id %>"
+                                                class="btn btn-success">Unblock</a>
+                                              <% } %>
+                                        <!-- <a href="/admin/deleteproduct?id=<%= products[i]._id %>"><button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button></a> -->
+                                    </div></td>
+                                </tr>
+                            </tr>
+                            <tr class="spacer"></tr>
+                        <%
+                        }
+
+                    }
+                    else{
+                        %>
+                            <tr>
+                                <td colspan="5">Users Not found</td>
+                            </tr>
+                        <%
+                    }
+               
+               %>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- END PRODUCT DETAILS -->
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="copyright">
+                                    <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+<%-include('../layouts/adminFooter') %>

@@ -1,0 +1,97 @@
+<%-include('../layouts/adminHeader') %>
+
+
+            <!-- HEADER DESKTOP-->
+
+            <!-- MAIN CONTENT-->
+            <div class="main-content">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        <div class="row product">
+                            <div class="col-lg-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <strong>Add Coupon</strong>
+                                    </div>
+                                    <div class="card-body card-block">
+                                        <form action="" method="post" >
+                                            <div class="row form-group">
+                                                <div class="col col-md-5">
+                                                    <label for="text-input" class="form-control-label">Coupon Code</label>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <input type="text" id="text-input" name="coupon_code" placeholder="Text" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-5">
+                                                    <label for="text-input" class="form-control-label">Coupon Type</label>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <select name="coupon_type" id="select" class="form-control" required>
+                                                        <option value="Percentage">Percentage</option>
+                                                        <option value="Flat">Flat</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-5">
+                                                    <label for="text-input" class="form-control-label">Coupon Value</label>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <input type="number" id="text-input" name="coupon_value" placeholder="Value" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-5">
+                                                    <label for="text-input" class="form-control-label">Minimum Purchase</label>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <input type="number" id="text-input" name="min_purchase" placeholder="Minimum Purchase" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-5">
+                                                    <label for="textarea-input" class="form-control-label">Max Discount</label><br>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <input type="number" id="text-input" name="max_discount" placeholder="Max Discount" class="form-control" required>
+                                                </div>
+                                            </div>
+                                        
+                                            <div class="card-footer">
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-dot-circle-o"></i> Submit
+                                                </button>
+                                            </div>
+                                            <div class="mb-3">
+                                                <% if(message) { %>
+                                                <p class="text-danger"><%= message %></p>
+                                                <% } %>
+                                            </div>
+                                        </form>
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="copyright">
+                                    <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+                       
+                       
+<%-include('../layouts/adminFooter') %>

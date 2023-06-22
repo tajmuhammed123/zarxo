@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../css/admin/home.css">
+    <script src="validate.js"></script>
+    
+    <title>Login Page</title>
+</head>
+<body>
+    <section class="form my-3 mx-3 py-5">
+        <div class="container">
+            <div class="row mainbox h-200 p-2 box">
+                <div class="card py-5" style="width: 23rem;">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= admin.name %></h5>
+                      <a href="/admin/dashboard" class="btn btn-warning">dashboard</a>
+                      <table>
+                        <tr>
+                            <td>Email:</td>
+                            <td><%= admin.email %></td>
+                        </tr>
+                        <tr>
+                            <td>Email:</td>
+                            <td><%= admin.mobile %></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <a href="/admin/logout" class="btn btn-danger">Logout</a>
+                  </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

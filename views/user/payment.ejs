@@ -1,0 +1,318 @@
+<%-include('../layouts/userHeader') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <!--Font Awesome CDN -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+	<!-- Title page -->
+	<section class="bg-img1 txt-center p-lr-15 p-tb-80" style="background-image: url('images/paymentimg.jpg');">
+		<h2 class="ltext-105 cl0 txt-center">
+			Payment
+		</h2>
+	</section>
+
+
+	<!-- Content page -->
+	<section class="bg0 p-t-104 p-b-116">
+		<div class="container p-lr-40">
+			<div class="flex-w flex-sa-m p-t-18 p-b-15 p-lr-40 p-lr-15-sm border-all">
+				<div class="flex-w flex-m m-r-20 m-tb-5">
+					<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>
+				</div>				
+					<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="couponApply()">
+							Apply coupon
+					</div>
+					<div id="amount">
+						<% const amount = cart.cart_amount; %>
+						<h5>Amount: $<%= amount %></h5>
+					  </div>					  
+			  	</div>
+			  
+            
+			  <form class="pay-form">
+				<div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40">
+				  <div class="flex-w flex-tr">
+					<div class="container bg-light mt-5 rounded">
+					  <small class="text-muted">Browse and select an option</small>
+					  <div class="container main-carousel container mb-2 pb-4">
+						<div class="main-container">
+						  <button role="button" id="arrow-left" class="arrow-left border-0 text-secondary p-1 rounded">
+							<i class="fa fa-chevron-left"></i>
+						  </button>
+						  <div class="container-carousel px-3">
+							<div class="carousel">
+							  <% if (userid && userid.address) { %>
+								<% for (let i = 0; i < userid.address.length; i++) { %>
+								  <% const address = userid.address[i]; %>
+								  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0">
+									<input type="radio" name="address" value="<%=userid.address[i]._id%>" id="<%=userid.address[i]._id%>" required />
+									<label for="<%=userid.address[i]._id%>" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+									  <div class="mb-1 mt-1">
+										<div class="text-sm">
+										  <p class="stext-30 cl6 size-100 p-t-18">
+											<%= address.firstName %>
+											<%= address.secondName %> <br>
+											<%= address.houseNumber %> <br>
+											<%= address.city %> <br>
+											<%= address.state %> <br>
+											<%= address.pincode %> <br>
+										  </p>
+										</div>
+									  </div>
+									</label>
+								  </div>
+								<% } %>
+							  <% } %>
+							</div>
+						  </div>
+						  <button role="button" id="arrow-right" class="arrow-right border-0 text-secondary p-1 rounded">
+							<i class="fa fa-chevron-right"></i>
+						  </button>
+						</div>
+					  </div>
+					  <div class="flex-w flex-tr w-full-md m-lr-70 mb-5" style="width: 150px;">
+						<a href="/addaddress?userid=<%= userid._id %>">
+						  <button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+							Add Address
+						  </button>
+						</a>
+					  </div>
+					</div>
+				  </div>
+				  <div class="m-t-20" style="display: flex; justify-content: center; align-items: center;">
+					<input type="hidden" name="amount" value="<%= totalamount %>">
+					<input type="hidden" name="name" value="<%= userid.name %>">
+					<input type="hidden" name="orderid" value="<%= order_id %>">
+			  
+					<div class="size-30 p-t-2" style="justify-content: center; align-items: center;">
+					  <div class="container bg-light mt-5 rounded">
+						<h3 class="text-muted">ADDRESS</h3>
+						<div class="container main-carousel container mb-5 pb-4">
+						  <div class="main-container">
+							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;" checked>
+							  <input type="radio" id="case1" name="mode" value="Cash On Delivery" />
+							  <label for="case1" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+								<div class="mb-1 mt-1">
+								  <div class="text-sm">
+									<h3><i class="fab fa-ubuntu"></i></h3>
+									<span>C O D</span>
+								  </div>
+								</div>
+							  </label>
+							</div>
+							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;">
+							  <input type="radio" id="case2" name="mode" value="Online Payment" />
+							  <label for="case2" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+								<div class="mb-1 mt-1">
+								  <div class="text-sm">
+									<h3><i class="fab fa-windows"></i></h3>
+									<span>Card</span>
+								  </div>
+								</div>
+							  </label>
+							</div>
+							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;">
+							  <input type="radio" id="case3" name="mode" value="Wallet" />
+							  <label for="case3" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+								<div class="mb-1 mt-1">
+								  <div class="text-sm">
+									<h3><i class="fab fa-apple"></i></h3>
+									<span>Wallet</span>
+								  </div>
+								</div>
+							  </label>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					  <div class="mb-3">
+						<% if (message) { %>
+						  <p class="text-danger"><%= message %></p>
+						<% } %>
+					  </div>
+					  <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+						Place Order
+					  </button>
+					</div>
+				  </div>
+				</div>
+			  </form>
+			  
+                
+		</div>
+	</section>	
+	
+	
+	<!-- Map -->
+	<!-- <div class="map">
+		<div class="size-303" id="google_map" data-map-x="40.691446" data-map-y="-73.886787" data-pin="images/icons/pin.png" data-scrollwhell="0" data-draggable="1" data-zoom="11"></div>
+	</div> -->
+
+
+
+	<!-- Footer -->
+	<%-include('../layouts/userFooter') %>
+
+
+	<!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+	<script>
+		$(".js-select2").each(function(){
+			$(this).select2({
+				minimumResultsForSearch: 20,
+				dropdownParent: $(this).next('.dropDownSelect2')
+			});
+		})
+	</script>
+<!--===============================================================================================-->
+	<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			$(this).css('position','relative');
+			$(this).css('overflow','hidden');
+			var ps = new PerfectScrollbar(this, {
+				wheelSpeed: 1,
+				scrollingThreshold: 1000,
+				wheelPropagation: false,
+			});
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+	</script>
+<!--===============================================================================================-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKFWBqlKAGCeS1rMVoaNlwyayu0e0YRes"></script>
+	<script src="js/map-custom.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+
+	
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+
+$(document).ready(function(){
+	$('.pay-form').submit(function(e){
+		e.preventDefault();
+
+		var formData = $(this).serialize();
+
+		$.ajax({
+			url:"/createOrder",
+			type:"POST",
+			data: formData,
+			success:function(res){
+				if(res.success){
+					if(res.cod==true){
+						console.log('cod');
+						window.location.href = "/success?orderid=<%= order_id %>"
+					}else{
+						var options = {
+						"key": ""+res.key_id+"",
+						"amount": ""+res.amount+"",
+						"mode": ""+res.mode+"",
+						"currency": "USD",
+						"name": "Payment",
+						"address": ""+res.address+"",
+						"image": "https://dummyimage.com/600x400/000/fff",
+						"order_id": ""+res.order_id+"",
+						"odrerid": ""+res.odrerid+"",
+						"handler": function (response){
+							$.ajax({
+							url: "/paidsuccess",
+							type: "POST",
+							data: {
+								response,
+								amount: res.amount,
+								mode: res.mode,
+								address: res.address,
+								order_id: res.order_id,
+								orderid: res.odrerid,
+							
+							},
+							success: function(res){
+								if(res.success){
+								window.location.href = "/success?orderid=<%= order_id %>";
+								alert("Payment Succeeded");
+								} else {
+								alert("Payment Failed");
+								}
+							},
+							error: function(){
+								alert("An error occurred while processing the payment.");
+							}
+							});
+							// window.open("/","_self")
+						},
+						"prefill": {
+							"contact":9895299091,
+							"name": ""+res.name+"",
+							"email": "userData.email"
+						},
+						"theme": {
+							"color": "#2300a3"
+						}
+					};
+					}
+					var razorpayObject = new Razorpay(options);
+					razorpayObject.on('payment.failed', function (response){
+							alert("Payment Failed");
+					});
+					razorpayObject.open();
+				}
+				else{
+					alert(res.msg);
+				}
+			}
+		})
+
+	});
+});
+
+</script>
+<script>
+	let count = 0;
+	var totalAmount
+    const coupon = document.getElementById("coupon").value.trim();
+		  
+		function couponApply(id, totalAmount) {
+  const coupon = document.getElementById("coupon").value.trim();
+  console.log(coupon);
+
+  $.ajax({
+    type: "POST",
+    url: "/coupon",
+    data: {
+      code: coupon
+    },
+    success: (response) => {
+      console.log('hjgg');
+      if (response.success) {
+		$('.amount').load(location.href + " .amount");
+      } else {
+        console.log('Coupon already taken');
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>

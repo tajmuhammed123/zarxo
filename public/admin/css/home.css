@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-image: url(https://wallpaperaccess.com/full/1393189.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mainbox{
+    border-radius: 30px;
+    background-color: rgb(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.card{
+    background-color: transparent !important;
+    border: 0 !important;
+    color: white !important;
+    font-size: x-large !important;
+}
+.card-title{
+    font-size: xx-large;
+}
