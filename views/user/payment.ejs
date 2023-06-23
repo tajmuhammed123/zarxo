@@ -14,22 +14,21 @@
 
 	<!-- Content page -->
 	<section class="bg0 p-t-104 p-b-116">
-		<div class="container p-lr-40">
-			<div class="flex-w flex-sa-m p-t-18 p-b-15 p-lr-40 p-lr-15-sm border-all">
-				<div class="flex-w flex-m m-r-20 m-tb-5">
-					<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>
-				</div>				
-					<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="couponApply()">
-							Apply coupon
-					</div>
-					<div id="amount">
-						<% const amount = cart.cart_amount; %>
-						<h5>Amount: $<%= amount %></h5>
-					  </div>					  
-			  	</div>
-			  
+		<div class="container p-lr-40">	  
             
 			  <form class="pay-form">
+				<div class="flex-w flex-sa-m p-t-18 p-b-15 p-lr-40 p-lr-15-sm border-all">
+					<div class="flex-w flex-m m-r-20 m-tb-5">
+						<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>
+					</div>				
+						<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="couponApply()">
+								Apply coupon
+						</div>
+						<div id="amount">
+							<input type="hidden" value="<%= cart.cart_amount %>" name="totalamnt" id="totalamnt">
+							<h5>Amount: $ <span id="displayamnt"><%= cart.cart_amount %></span> </h5>
+						</div>					  
+				</div>
 				<div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40">
 				  <div class="flex-w flex-tr">
 					<div class="container bg-light mt-5 rounded">
@@ -293,24 +292,29 @@ $(document).ready(function(){
     const coupon = document.getElementById("coupon").value.trim();
 		  
 		function couponApply(id, totalAmount) {
+			event.preventDefault();
   const coupon = document.getElementById("coupon").value.trim();
   console.log(coupon);
-
-  $.ajax({
+	if(count==0){
+		$.ajax({
     type: "POST",
     url: "/coupon",
     data: {
       code: coupon
     },
     success: (response) => {
-      console.log('hjgg');
       if (response.success) {
-		$('.amount').load(location.href + " .amount");
+		alert(response.amount)
+		count++
+		document.getElementById('totalamnt').value = response.amount;
+    	document.getElementById('displayamnt').innerHTML = response.amount;
+		
       } else {
         console.log('Coupon already taken');
       }
     }
   });
+	}
 }
 </script>
 

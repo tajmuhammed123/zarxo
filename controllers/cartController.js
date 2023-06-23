@@ -138,6 +138,7 @@ const couponCode = async (req, res) => {
             console.log('Already used');
             res.json({ success: false })
           }else{
+            console.log(coupon.min_purchase);
             if (coupon.coupon_type === "Flat" && coupon.min_purchase < totalPrice) {
               console.log('flat');
               const val =  coupon.coupon_value;
@@ -150,8 +151,6 @@ const couponCode = async (req, res) => {
               console.log(totalPrice);
               userData.used_coupon.push(coupon.coupon_code)
               userData.save({ upsert: true })
-              cartData.cart_amount=totalPrice
-              cartData.save()
             } else if (coupon.coupon_type === "Percentage" && coupon.min_purchase < totalPrice) {
               console.log('percentage');
               const val = (totalPrice * coupon.coupon_value) / 100;
@@ -165,11 +164,8 @@ const couponCode = async (req, res) => {
             console.log(totalPrice);
             userData.used_coupon.push(coupon.coupon_code)
             userData.save({ upsert: true })
-            cartData.cart_amount=totalPrice
-            cartData.save()
-              // req.session.coupon_status = true;
             }
-            res.json({ success: coupon });
+            res.json({ success: coupon, amount:totalPrice });
           }
           
         });

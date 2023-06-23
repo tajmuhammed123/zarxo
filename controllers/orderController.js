@@ -4,6 +4,7 @@ const User = require("../models/usermodals");
 const Order=require('../models/orderModels')
 const Wallet=require('../models/walletModels')
 const Dashboard=require('../models/dashboardModels')
+const Coupon=require('../models/couponModels')
 
 const Razorpay = require('razorpay'); 
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
@@ -186,10 +187,11 @@ const orderHistory=async(req,res)=>{
 
   const createOrder = async (req, res) => {
     try {
+      console.log(req.body.totalamnt);
       const userid = req.session.user_id;
       const cartData = await Cart.findOne({ user_id: userid });
       const customer = await User.findOne({ _id: userid });
-      const amount = cartData.cart_amount;
+      const amount = parseFloat(req.body.totalamnt);
       const amont = cartData.cart_amount*100;
       const addressid = req.body.address;
       const orderid = req.body.orderid;
@@ -197,7 +199,9 @@ const orderHistory=async(req,res)=>{
         { _id: userid, 'address._id': addressid },
         { 'address.$': 1 }
       );
-  
+      
+      const code = req.body.coupon;
+      customer.used_coupon.push(code)
       console.log(req.body.mode);
       console.log(req.body.address);
   
