@@ -1,3 +1,6 @@
+
+// ------------------------ IMPORTS ------------------------ //
+
 const Cart=require('../models/cartModels')
 const Products=require('../models/productModels')
 const User = require("../models/usermodals");
@@ -6,6 +9,8 @@ const Wallet=require('../models/walletModels')
 const Dashboard=require('../models/dashboardModels')
 const Coupon=require('../models/couponModels')
 
+// ------------------------ RAZORPAY ------------------------ //
+
 const Razorpay = require('razorpay'); 
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
@@ -13,6 +18,8 @@ const razorpayInstance = new Razorpay({
     key_id: RAZORPAY_ID_KEY,
     key_secret: RAZORPAY_SECRET_KEY
 });
+
+// ------------------------ ODRER HISTORY ------------------------ //
 
 const orderHistory=async(req,res)=>{
     try{
@@ -27,6 +34,8 @@ const orderHistory=async(req,res)=>{
       console.log(err.message);
     }
   }
+
+// ------------------------ PRODUCT STATUS ------------------------ //
 
   const productStatus = async (req, res) => {
     try {
@@ -79,7 +88,6 @@ const orderHistory=async(req,res)=>{
             })
             console.log(dashboard);
         }
-        
         await Order.updateOne(
           {
             customer_id: id,
@@ -98,7 +106,7 @@ const orderHistory=async(req,res)=>{
     } catch (error) {
       console.log(error.message);
     }
-  };  
+  };
 
   const cancelProduct=async(req,res)=>{
     try {
@@ -114,7 +122,7 @@ const orderHistory=async(req,res)=>{
   const returnProduct = async (req, res) => {
     try {
       const orderid = req.query.orderid;
-      const daysThreshold = 14; // Number of days threshold
+      const daysThreshold = 14;
   
       const order = await Order.findOne({
         customer_id: req.session.user_id,
@@ -122,7 +130,6 @@ const orderHistory=async(req,res)=>{
       });
   
       if (!order) {
-        // Order not found
         return res.status(404).json({ error: 'Order not found' });
       }
   
@@ -130,16 +137,13 @@ const orderHistory=async(req,res)=>{
       const orderDateStr = order.product_details.find(item => item._id.toString() === orderid).order_date;
       const orderDate = new Date(orderDateStr);
       const userid=req.session.user_id
-  
       const timeDifference = currentDate.getTime() - orderDate.getTime();
       const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
   
       if (daysDifference > daysThreshold) {
-        // Order is older than the threshold, handle the case accordingly
         return res.status(400).json({ error: 'Order is older than the threshold' });
       }
-  
-      // Perform the update on the found order
+
       await Order.findOneAndUpdate(
         {
           customer_id: userid,
@@ -183,7 +187,7 @@ const orderHistory=async(req,res)=>{
     }
   };  
 
-  
+// ------------------------ ORDER PROCESS ------------------------ //
 
   const createOrder = async (req, res) => {
     try {
@@ -246,7 +250,6 @@ const orderHistory=async(req,res)=>{
         console.log(wallet.wallet_amount);
         console.log(cartData.cart_amount);
         if (wallet.wallet_amount >= cartData.cart_amount) {
-          // Check if cartData exists and is an array
           console.log('kjhg');
           if (cartData && Array.isArray(cartData.product)) {
             for (const cartItem of cartData.product) {
@@ -322,7 +325,7 @@ const orderHistory=async(req,res)=>{
           await wallet.save();
   
           await Dashboard.updateMany(
-            {}, // Empty filter object to match all documents
+            {},
             {
               $inc: {
                 items_sold: cartData.product.length,
@@ -344,7 +347,6 @@ const orderHistory=async(req,res)=>{
           res.status(400).send({ success: false, msg: 'Insufficient Balance' });
         }
       } else {
-        // Check if cartData exists and is an array
         if (cartData && Array.isArray(cartData.product)) {
           for (const cartItem of cartData.product) {
             const orderItem = {
@@ -388,7 +390,7 @@ const orderHistory=async(req,res)=>{
             console.log(order);
           }
           await Dashboard.updateMany(
-            {}, // Empty filter object to match all documents
+            {},
             {
               $inc: {
                 items_sold: cartData.product.length,
@@ -430,7 +432,6 @@ const orderHistory=async(req,res)=>{
 
   const onlinePaySuccess=async(req,res)=>{
     try {
-      console.log('dfs');
       const userid = req.session.user_id;
       const cartData = await Cart.findOne({ user_id: userid });
       const customer = await User.findOne({ _id: userid });
@@ -447,7 +448,6 @@ const orderHistory=async(req,res)=>{
       );
       console.log(currentDate);
 
-        // Check if cartData exists and is an array
         if (cartData && Array.isArray(cartData.product)) {
           for (const cartItem of cartData.product) {
             const orderItem = {
@@ -512,7 +512,7 @@ const orderHistory=async(req,res)=>{
         
         console.log(amnt);
         await Dashboard.updateMany(
-          {}, // Empty filter object to match all documents
+          {},
           {
             $inc: {
               items_sold: cartData.product.length,
@@ -550,7 +550,6 @@ const orderHistory=async(req,res)=>{
         console.log(order);
           res.render('success', { order:products,session:orderid, cart:cartData, title })
       
-        // Continue with the rest of your code logic
       } else {
         console.log("Order not found");
       }   
@@ -560,7 +559,7 @@ const orderHistory=async(req,res)=>{
     }
   }
   
-
+// ------------------------ EXPORTS ------------------------ //
 
   module.exports = {
     orderHistory,

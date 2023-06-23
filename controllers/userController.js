@@ -1,3 +1,6 @@
+
+// ------------------------ IMPORTS ------------------------ //
+
 const User=require('../models/usermodals')
 const Products=require('../models/productModels')
 const Cart=require('../models/cartModels')
@@ -21,22 +24,19 @@ const razorpayInstance = new Razorpay({
     key_secret: RAZORPAY_SECRET_KEY
 });
 
-// const { loadOrderAddress } = require('./adminController')
+// ------------------------ SECURE PASSWORD ------------------------ //
 
 
 const securePassword = async(password) =>{
     try {
-
         const passwordHash = await bcrypt.hash(password, 10);
-        return passwordHash;
-        
+        return passwordHash;        
     } catch (error) {
-
         console.log(error.message);
-
     }
 }
 
+// ------------------------ LOGIN/ SIGNUP ------------------------ //
 
 const loginLoad = async(req,res)=>{
     try{
@@ -167,44 +167,33 @@ const verifyLogin = async(req,res) => {
         console.log('fgsd');
         const username = req.body.username;
         const password = req.body.password;
-
         const userData = await User.findOne({username:username, id_disable:false});
-
         if (userData) {
-
             const passwordMatch = await bcrypt.compare(password, userData.password);
-
             if(passwordMatch){
                 if(userData.is_admin === 0
                   // ||
                   // userData.is_admin == 1 
                   ){
                 req.session.user_id = userData._id;
-
                 res.redirect('/')
                 }
                 else{
-
                     res.render('login', {message : "Email or password is incorrect"});
-
                 }
-
             }
             else{
-
                 res.render('login', {message : "Email or password is incorrect"});
-            }
-            
+            }           
         } else {
-
             res.render('login', {message : "Please provide your correct Email and password "});
-
         }
-
     } catch (error) {
         console.log(error.message);
     }
 }
+
+// ------------------------ EDIT USER ------------------------ //
 
 const editUser=async(req,res)=>{
   try{
@@ -260,6 +249,8 @@ const updateUser=async(req,res)=>{
   }
 }
 
+// ------------------------ LOAD HOME ------------------------ //
+
 const loadHome = async (req,res)=> {
 
         try {
@@ -299,6 +290,9 @@ const loadHome = async (req,res)=> {
             console.log(error.message);
         }
 }
+
+// ------------------------ LOAD SHOP ------------------------ //
+
 const loadShop = async (req,res)=> {
 
         try {
@@ -336,20 +330,7 @@ const loadShop = async (req,res)=> {
         }
 }
 
-// const filterProduct= async(req,res)=>{
-//     try{
-//         const filterproduct=req.query.filterproduct
-//         console.log(filterproduct);
-//         const productData = await Products.find({ product_brand: filterproduct });
-        // const userData = await User.findById({_id : req.session.user_id});
-
-//         console.log(productData);
-        
-//         res.render('home',{products:productData});
-//     }catch(err){
-//         console.log(err.message);
-//     }
-// }
+// ------------------------ PRODUCT DETAILS ------------------------ //
 
 const productDetail = async(req,res)=>{
     try{
@@ -393,6 +374,8 @@ const productDetail = async(req,res)=>{
     }
 }
 
+// ------------------------ USER PROFILE ------------------------ //
+
 const userProfile=async(req,res)=>{
   try {
     const userid=req.session.user_id
@@ -406,6 +389,8 @@ const userProfile=async(req,res)=>{
     console.log(error.message);
   }
 }
+
+// ------------------------ SEARCH PRODUCT ------------------------ //
 
 const searchProduct = async (req, res) => {
   try {
@@ -446,6 +431,7 @@ const searchProduct = async (req, res) => {
   }
 };
 
+// ------------------------ USER LOGOUT ------------------------ //
 
 const userLogout=async(req,res)=>{
   try{
@@ -456,6 +442,8 @@ const userLogout=async(req,res)=>{
   }
 }
 
+// ------------------------ WALLET ------------------------ //
+
 const loadWallet = async (req, res) => {
   try {
     const user_id = req.session.user_id;
@@ -463,16 +451,13 @@ const loadWallet = async (req, res) => {
     let wallet = await Wallet.findOne({ user_id: user_id });
     const cartData = await Cart.findOne({ user_id: user_id })
     const title='Wallet'
-
     if (!wallet) {
       const walletUser = new Wallet({
         user_id: user_id,
         wallet_amount: 0
       });
-
       wallet = await walletUser.save();
     }
-
     res.render('wallet', { wallet: wallet, userData:userData, cart:cartData, title, session:user_id });
   } catch (error) {
     console.log(error.message);
@@ -527,6 +512,8 @@ const addWallet= async(req,res)=>{
     console.log(err.message);
   }
 }
+
+// ------------------------ FILTER PRODUCT ------------------------ //
 
 const ascendingFilter=async(req,res)=>{
   try{
@@ -594,6 +581,9 @@ const descendingFilter=async(req,res)=>{
     console.log(err.message);
   }
 }
+
+// ------------------------ PAGINATION ------------------------ //
+
 const loadMore=async(req,res)=>{
   try{
     if(req.session.user_id){
@@ -628,6 +618,8 @@ const loadMore=async(req,res)=>{
     console.log(err.message);
   }
 }
+
+// ------------------------ ADDRESS ------------------------ //
 
 const loadAddress=async(req,res)=>{
   try{
@@ -703,7 +695,7 @@ const deleteAddress=async(req,res)=>{
   }
 }
 
-
+// ------------------------ ORDER DETAILS ------------------------ //
 
 const loadOrderDetails=async(req,res)=>{
   try{
@@ -826,6 +818,8 @@ const loadDownload=async(req,res)=>{
   }
 }
 
+// ------------------------ FORGET PASSWORD ------------------------ //
+
 const sentResetPassword = async (name, email, token) => {
   try {
       const transporter = nodemailer.createTransport({
@@ -843,7 +837,6 @@ const sentResetPassword = async (name, email, token) => {
           to: email,
           subject: "For Reset Password",
           html: '<p>Hii ' + name + ',Please click here to <a href="http://localhost:3000/forget-password?token=' + token + '"> Reset </a> your Password.</p>'
-
       }
       transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -852,22 +845,14 @@ const sentResetPassword = async (name, email, token) => {
               console.log("Email has been sent:- ", info.response);
           }
       })
-
-
   } catch (error) {
       console.log(error.message);
   }
-
-
 }
-
-
-// for get password
 
 const forgetLoad = async (req, res) => {
   try {
       res.render('forget');
-
   } catch (error) {
       console.log(error.message);
   }
@@ -888,12 +873,10 @@ const forgetVerify = async (req, res) => {
               const updateData = await User.updateOne({ email: email }, { $set: { token: randomString } })
               sentResetPassword(userData.name, userData.email, randomString)
               res.render('forget', { message: "Please check your mail to reset your password." })
-
           }
       } else {
           res.render('forget', { message: "user email is incorrect." });
       }
-
   } catch (error) {
       console.log(error.message);
   }
@@ -901,7 +884,6 @@ const forgetVerify = async (req, res) => {
 
 const forgetPasswordLoad = async (req, res) => {
   try {
-
       const token = req.query.token;
       const tokenData = await User.findOne({ token: token })
       if (tokenData) {
@@ -909,7 +891,6 @@ const forgetPasswordLoad = async (req, res) => {
       } else {
           res.render('404', { message: "Token is invalid" })
       }
-
   } catch (error) {
       console.log(error.message);
   }
@@ -917,13 +898,9 @@ const forgetPasswordLoad = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-
       const password = req.body.password;
       const user_id = req.body.user_id
-
       const secure_Password = await securePassword(password)
-
-
       const updateData = await User.findByIdAndUpdate({ _id: user_id }, { $set: { password: secure_Password, token: '' } })
 
       res.redirect("/")
@@ -932,6 +909,8 @@ const resetPassword = async (req, res) => {
       console.log(error.message);
   }
 }
+
+// ------------------------ WISHLIST ------------------------ //
 
 const loadWishlist=async(req,res)=>{
   try {
@@ -981,7 +960,7 @@ const addWishlist=async(req,res)=>{
 }
 
 
-
+// ------------------------ EXPORTS ------------------------ //
 
 
 module.exports ={

@@ -1,3 +1,6 @@
+
+// ------------------------ IMPORTS ------------------------ //
+
 const User = require("../models/usermodals");
 const Products = require("../models/productModels");
 const Category=require('../models/categoreyModels')
@@ -8,15 +11,13 @@ const Banner=require('../models/bannerModels')
 const Offer=require('../models/offerModels')
 const bcrypt = require("bcrypt");
 const mime = require('mime-types');
-
-
-
 const fs = require('fs');
 const path = require('path');
 const pdf=require('puppeteer')
 const ejs = require('ejs');
 const puppeteer = require('puppeteer');
 
+// ------------------------ SECURE PASSWORD ------------------------ //
 
 const securePassword = async (password) => {
   try {
@@ -27,7 +28,7 @@ const securePassword = async (password) => {
   }
 };
 
-
+// ------------------------ LOGIN ------------------------ //
 
 const loadLogin = async (req, res) => {
   try {
@@ -81,6 +82,8 @@ const logout=async(req,res)=>{
   }
 }
 
+// ------------------------ DASHBOARD ------------------------ //
+
 const loadDashboard = async (req, res) => {
   try {
     var id = req.session.admin_id;
@@ -112,6 +115,8 @@ const loadDashboard = async (req, res) => {
   }
 };
 
+// ------------------------ LOAD USER ------------------------ //
+
 const loadUser = async (req, res) => {
   try {
     const id=req.session.admin_id
@@ -123,6 +128,8 @@ const loadUser = async (req, res) => {
     console.log(err.message);
   }
 };
+
+// ------------------------ PRODUCT CONTROLLERS ------------------------ //
 
 const loadProducts = async (req, res) => {
   try {
@@ -411,6 +418,8 @@ const disableProduct = async(req,res)=>{
   }
 }
 
+// ------------------------ ORDER CONTROLLERS ------------------------ //
+
 const loadOrders=async(req,res)=>{
   try{
     const adminid = req.session.admin_id
@@ -449,6 +458,8 @@ const loadOrderProducts=async(req,res)=>{
     console.log(err.message);
   }
 }
+
+// ------------------------ CATEGOREY CONTROLLERS ------------------------ //
 
 const loadAddCategorey=async(req,res)=>{
   try{
@@ -528,6 +539,40 @@ const disableCategory=async(req,res)=>{
   }
 }
 
+
+const loadeditCategorey=async(req,res)=>{
+  try{
+    const adminid = req.session.admin_id
+    const admin= await User.findById({_id: adminid})
+    const categoryid=req.query.categoryid
+    const categoryname= await Category.findById({_id: categoryid})
+    console.log(categoryname);
+    res.render('edit-category',{category:categoryname, admin:admin })
+    
+  }catch(err){
+    console.log(err.message)
+  }
+}
+const editCategorey=async(req,res)=>{
+  try{
+    const category = req.body.category
+    const categoryid=req.body.categoryid
+    console.log(categoryid);
+    const categoryData=await Category.findByIdAndUpdate({_id:categoryid},{ $set :{
+      product_category: req.body.category
+    }})
+    await categoryData.save()
+    res.status(200).json({ success: true });
+    
+  }catch(err){
+    console.log(err.message)
+    res.status(400).json({ success: false });
+  }
+}
+
+
+// ------------------------ USER CONTROLLERS ------------------------ //
+
 const disableUser=async(req,res)=>{
   try {
     const adminid = req.session.admin_id;
@@ -556,6 +601,7 @@ const enableUser=async(req,res)=>{
   }
 }
 
+// ------------------------ COUPON CONTROLLERS ------------------------ //
 
 const loadAddCoupon=async(req,res)=>{
   try {
@@ -637,36 +683,7 @@ const editCoupon = async (req, res) => {
   }
 };
 
-const loadeditCategorey=async(req,res)=>{
-  try{
-    const adminid = req.session.admin_id
-    const admin= await User.findById({_id: adminid})
-    const categoryid=req.query.categoryid
-    const categoryname= await Category.findById({_id: categoryid})
-    console.log(categoryname);
-    res.render('edit-category',{category:categoryname, admin:admin })
-    
-  }catch(err){
-    console.log(err.message)
-  }
-}
-const editCategorey=async(req,res)=>{
-  try{
-    const category = req.body.category
-    const categoryid=req.body.categoryid
-    console.log(categoryid);
-    const categoryData=await Category.findByIdAndUpdate({_id:categoryid},{ $set :{
-      product_category: req.body.category
-    }})
-    await categoryData.save()
-    res.status(200).json({ success: true });
-    
-  }catch(err){
-    console.log(err.message)
-    res.status(400).json({ success: false });
-  }
-}
-
+// ------------------------ SALES REPORT ------------------------ //
 
 const saleReport = async (req, res) => {
   try {
@@ -689,8 +706,8 @@ const saleReport = async (req, res) => {
       }
     }
     
-    console.log(months0106); // Product details with order dates from month 01 to 06
-    console.log(months0612); // Product details with order dates from month 06 to 12
+    console.log(months0106); // order dates from month 01 to 06
+    console.log(months0612); // order dates from month 06 to 12
     
     const dashboard = await Dashboard.find({});
     const data = {
@@ -744,6 +761,7 @@ const loadAddBanner=async(req,res)=>{
   }
 }
 
+// ------------------------ BANNER CONTROLLERS ------------------------ //
 
 const addBanner = async (req, res) => {
   try {
@@ -768,7 +786,6 @@ const addBanner = async (req, res) => {
       });
     }
 
-    // The file is an image, continue with banner creation
 
     const bannerFile = req.file.filename;
     const banner = new Banner({
@@ -852,6 +869,8 @@ const editBanner = async (req, res) => {
   }
 };
 
+// ------------------------ OFFER CONTROLLERS ------------------------ //
+
 const loadaddOffer=async(req,res)=>{
   const adminid=req.session.admin_id
   res.render('add-offer',{admin:adminid})
@@ -872,6 +891,7 @@ const addOffer=async(req,res)=>{
   }
 }
 
+// ------------------------ EXPORTS ------------------------ //
 
 module.exports = {
   loadLogin,
