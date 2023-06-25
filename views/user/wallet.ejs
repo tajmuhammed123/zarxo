@@ -45,7 +45,7 @@
                   </thead>
                   <tbody>
                     <% if (wallet.wallet_history && wallet.wallet_history.length> 0) { %>
-                      <% for (let i=0; i < wallet.wallet_history.length; i++) { %>
+                      <% for (let i=wallet.wallet_history.length-1; i >=0 ; i--) { %>
                         <% const wallet_history=wallet.wallet_history[i]; %>
                           <tr class="w-100" style="justify-content: space-between; display: flex;">
                             <input type="hidden" value="<%= wallet_history.transaction_amount %>">

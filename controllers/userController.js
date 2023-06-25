@@ -13,16 +13,9 @@ const bcrypt = require("bcrypt");
 const fs= require('fs')
 const pdf=require('pdf-creator-node')
 const path=require('path')
-const randomstring =require('randomstring')
-const Razorpay = require('razorpay'); 
+const randomstring =require('randomstring') 
 const nodemailer = require('nodemailer')
 const config= require('../config/config')
-const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
-
-const razorpayInstance = new Razorpay({
-    key_id: RAZORPAY_ID_KEY,
-    key_secret: RAZORPAY_SECRET_KEY
-});
 
 // ------------------------ SECURE PASSWORD ------------------------ //
 
@@ -254,6 +247,7 @@ const updateUser=async(req,res)=>{
 const loadHome = async (req,res)=> {
 
         try {
+          const title='Home'
             if(req.session.user_id){
               const banner= await Banner.find({})
               const session=req.session.user_id
@@ -270,7 +264,7 @@ const loadHome = async (req,res)=> {
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             console.log(id);
-            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner});
+            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner, title:title});
             }else{
               const banner= await Banner.find({})
               const session=null
@@ -282,7 +276,7 @@ const loadHome = async (req,res)=> {
                 product_category: { $in: categoryIds }
               }).limit(8);
               console.log(banner);
-              res.render('home',{products:productData, session, cart: null, category:category, banner:banner})
+              res.render('home',{products:productData, session, cart: null, category:category, banner:banner, title:title})
             }
 
         } catch (error) {
@@ -299,7 +293,7 @@ const loadShop = async (req,res)=> {
             if(req.session.user_id){
               const session=req.session.user_id
               const category = await Category.find({ id_disable: false });
-              const categoryIds = category.map(c => c.product_category); // Extract category IDs
+              const categoryIds = category.map(c => c.product_category); 
 
               const productData = await Products.find({
                 id_disable: false,
@@ -311,17 +305,17 @@ const loadShop = async (req,res)=> {
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             console.log(id);
-            res.render('product',{products:productData, user:userData, session, cart: cartData, category:category});
+            res.render('product',{products:productData, user:userData, session, cart: cartData, category:category, title:'Shop' });
             }else{
               const session=null
               const category = await Category.find({ id_disable: false });
-              const categoryIds = category.map(c => c.product_category); // Extract category IDs
+              const categoryIds = category.map(c => c.product_category); 
               console.log(categoryIds);
               const productData = await Products.find({
                 id_disable: false,
                 product_category: { $in: categoryIds }
               }).limit(8);
-              res.render('product',{products:productData, session, cart: null, category:category})
+              res.render('product',{products:productData, session, cart: null, category:category, title:'Shop' })
             }
 
         } catch (error) {
@@ -464,54 +458,6 @@ const loadWallet = async (req, res) => {
   }
 };
 
-const addWallet= async(req,res)=>{
-  try{
-
-    const userid=req.session.user_id
-    const amount =req.body.addamount * 100
-    
-    
-    const options = {
-      amount: amount,
-      currency: 'INR',
-      receipt: 'razorUser@gmail.com'
-    };
-
-    razorpayInstance.orders.create(options, async (err, order) => {
-      console.log('Razorpay API Response:', err, order);
-      if (!err) {
-        res.status(200).send({
-          success: true,
-          amount: amount,
-          key_id: RAZORPAY_ID_KEY,
-          contact: '9895299091',
-          name: 'Taj Muhammed',
-          email: 'tajmuhammed4969@gmail.com'
-        });
-
-      const wallet= await Wallet.findOne({user_id:userid})
-      await Wallet.updateOne({user_id:userid},{
-        $inc: {
-          wallet_amount: req.body.addamount
-        }
-      },
-      { new: true })
-      let wallet_history={
-        transaction_amount:'+$'+req.body.addamount
-      }
-      wallet.wallet_history.shift(wallet_history)
-      await wallet.save()
-        
-      } else {
-        console.log('hjghfd');
-        res.status(400).send({ success: false, msg: 'Something went wrong!' });
-      }
-    });
-
-  }catch(err){
-    console.log(err.message);
-  }
-}
 
 // ------------------------ FILTER PRODUCT ------------------------ //
 
@@ -708,7 +654,7 @@ const loadOrderDetails=async(req,res)=>{
     const title='Order'
     const order = orderData.product_details.find((product) => product._id.toString() === productid);
     console.log(order);
-      res.render('orderdetails',{ order:order, user:user, cart:cartData, title })
+      res.render('orderdetails',{ order:order, user:user, cart:cartData, title, session:id })
   }catch(err){
     console.log(err.message);
   }
@@ -919,10 +865,8 @@ const loadWishlist=async(req,res)=>{
     const wishlistData = await Wishlist.findOne({ customer_id: userid });
     const productIds = Array.from(new Set(wishlistData.product_id)); 
     const products = await Products.find({ _id: { $in: productIds } });
-    
-    
-      const cartData=await Cart.findOne({ user_id: userid })
-      res.render('wishlist',{products:products,session:userid, cart:cartData})
+    const cartData=await Cart.findOne({ user_id: userid })
+      res.render('wishlist',{products:products,session:userid, cart:cartData, title:'Wishlist'})
   } catch (error) {
     console.log(error.message);
   }
@@ -979,7 +923,6 @@ module.exports ={
     searchProduct,
     userLogout,
     loadWallet,
-    addWallet,
     ascendingFilter,
     descendingFilter,
     loadMore,

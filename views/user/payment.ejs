@@ -12,133 +12,236 @@
 	</section>
 
 
-	<!-- Content page -->
-	<section class="bg0 p-t-104 p-b-116">
-		<div class="container p-lr-40">	  
+	<!-- Shopping Cart -->
+	<section class="bg0 p-t-104 p-b-116">  
             
-			  <form class="pay-form">
-				<div class="flex-w flex-sa-m p-t-18 p-b-15 p-lr-40 p-lr-15-sm border-all">
-					<div class="flex-w flex-m m-r-20 m-tb-5">
-						<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>
-					</div>				
-						<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="couponApply()">
-								Apply coupon
-						</div>
-						<div id="amount">
-							<input type="hidden" value="<%= cart.cart_amount %>" name="totalamnt" id="totalamnt">
-							<h5>Amount: $ <span id="displayamnt"><%= cart.cart_amount %></span> </h5>
-						</div>					  
-				</div>
-				<div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40">
-				  <div class="flex-w flex-tr">
-					<div class="container bg-light mt-5 rounded">
-					  <small class="text-muted">Browse and select an option</small>
-					  <div class="container main-carousel container mb-2 pb-4">
-						<div class="main-container">
-						  <button role="button" id="arrow-left" class="arrow-left border-0 text-secondary p-1 rounded">
-							<i class="fa fa-chevron-left"></i>
-						  </button>
-						  <div class="container-carousel px-3">
-							<div class="carousel">
-							  <% if (userid && userid.address) { %>
-								<% for (let i = 0; i < userid.address.length; i++) { %>
-								  <% const address = userid.address[i]; %>
-								  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0">
-									<input type="radio" name="address" value="<%=userid.address[i]._id%>" id="<%=userid.address[i]._id%>" required />
-									<label for="<%=userid.address[i]._id%>" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
-									  <div class="mb-1 mt-1">
-										<div class="text-sm">
-										  <p class="stext-30 cl6 size-100 p-t-18">
-											<%= address.firstName %>
-											<%= address.secondName %> <br>
-											<%= address.houseNumber %> <br>
-											<%= address.city %> <br>
-											<%= address.state %> <br>
-											<%= address.pincode %> <br>
-										  </p>
+			<form class="pay-form">
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50 col-12">
+								<div class="m-l--25 m-r--38 m-lr-0-xl">
+									<%
+										if (cart && cart.product.length > 0) {
+										for (let i = 0; i < cart.product.length; i++) {
+											const orderlist = cart.product[i];
+										%>
+											<div class="card shadow-0 border mb-4">
+											<div class="card-body">
+												<div class="row">
+												<div class="col-md-2">
+													<img src="/admin/images/<%= orderlist.product_img %>" class="img-fluid" alt="Phone">
+												</div>
+												<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+													<p class="text-muted mb-0"><%= orderlist.product_name %></p>
+												</div>
+												<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+													<p class="text-muted mb-0 small" style="text-transform: uppercase;"><%= orderlist.product_brand %></p>
+												</div>
+												<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+													<p class="text-muted mb-0 small">Size: <%= orderlist.product_size %></p>
+												</div>
+												<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+													<p class="text-muted mb-0 small">Qty: <%= orderlist.product_quantity %></p>
+												</div>
+												</div>
+											</div>
+											</div>
+										<%
+										}
+										} else {
+										%>
+										<div class="row">
+											<div class="col-md-12">
+											<p>Products Not Found</p>
+											</div>
 										</div>
-									  </div>
-									</label>
-								  </div>
-								<% } %>
-							  <% } %>
+										<%
+										}
+										%>
+
+									<div class="wrap-table-shopping-cart  p-2">
+											<div class="flex-w flex-tr">
+											  <div class="container mt-5 rounded col-12">
+												
+												<h3 class="text-muted">ADDRESS</h3>
+												<div class="container main-carousel container mb-2 pb-4">
+												  <div class="main-container">
+													<button role="button" id="arrow-left" class="arrow-left border-0 text-secondary p-1 rounded">
+													  <i class="fa fa-chevron-left"></i>
+													</button>
+													<div class="container-carousel px-3">
+													  <div class="carousel">
+														<% if (userid && userid.address) { %>
+														  <% for (let i = 0; i < userid.address.length; i++) { %>
+															<% const address = userid.address[i]; %>
+															<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0">
+															  <input type="radio" name="address" value="<%=userid.address[i]._id%>" id="<%=userid.address[i]._id%>" required />
+															  <label for="<%=userid.address[i]._id%>" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+																<div class="mb-1 mt-1">
+																  <div class="text-sm">
+																	<span class="stext-30 cl6 size-100 p-t-18">
+																	  <%= address.firstName %>
+																	  <%= address.secondName %> <br>
+																	  <%= address.houseNumber %> <br>
+																	  <%= address.city %> <br>
+																	  <%= address.state %> <br>
+																	  <%= address.pincode %> <br>
+																	</span>
+																  </div>
+																</div>
+															  </label>
+															</div>
+														  <% } %>
+														<% } %>
+													  </div>
+													</div>
+													<button role="button" id="arrow-right" class="arrow-right border-0 text-secondary p-1 rounded">
+													  <i class="fa fa-chevron-right"></i>
+													</button>
+												  </div>
+												</div>
+												<div class="flex-w flex-tr w-full-md m-lr-70 mb-5" style="width: 150px;">
+													<a href="/addaddress?userid=<%= userid._id %>" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+													  Add Address
+													</a>
+												</div>
+											  </div>
+											</div>
+											<div style="display: flex; justify-content: center; align-items: center;">
+											  <input type="hidden" name="amount" value="<%= totalamount %>">
+											  <input type="hidden" name="name" value="<%= userid.name %>">
+											  <input type="hidden" name="orderid" value="<%= order_id %>">
+										
+											  <div class="size-30 p-t-2 col-12" >
+												<div class="container mt-1 rounded">
+												  <div class="container main-carousel container mb-1 p-2">
+													<div class="main-container row" style="justify-content: center; align-items: center;">
+													  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-3 mx-1 mx-md-2 m-2 px-0" style="width: 300px;" checked>
+														<input type="radio" id="case1" name="mode" value="Cash On Delivery" />
+														<label for="case1" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+														  <div class="mb-1 mt-1">
+															<div class="text-sm">
+															  <h3><i class="fab fa-ubuntu"></i></h3>
+															  <span>C O D</span>
+															</div>
+														  </div>
+														</label>
+													  </div>
+													  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-3 mx-1 mx-md-2 m-2 px-0" style="width: 300px;">
+														<input type="radio" id="case2" name="mode" value="Online Payment" />
+														<label for="case2" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+														  <div class="mb-1 mt-1">
+															<div class="text-sm">
+															  <h3><i class="fab fa-windows"></i></h3>
+															  <span>Card</span>
+															</div>
+														  </div>
+														</label>
+													  </div>
+													  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-3 mx-1 mx-md-2 m-2 px-0" style="width: 300px;">
+														<input type="radio" id="case3" name="mode" value="Wallet" />
+														<label for="case3" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+														  <div class="mb-1 mt-1">
+															<div class="text-sm">
+															  <h3><i class="fab fa-apple"></i></h3>
+															  <span>Wallet</span>
+															</div>
+														  </div>
+														</label>
+													  </div>
+													</div>
+												  </div>
+												</div>
+												<div class="mb-3">
+												  <% if (message) { %>
+													<p class="text-danger"><%= message %></p>
+												  <% } %>
+												</div>
+												
+											  </div>
+											</div>
+									</div>
+									
+								</div>
 							</div>
-						  </div>
-						  <button role="button" id="arrow-right" class="arrow-right border-0 text-secondary p-1 rounded">
-							<i class="fa fa-chevron-right"></i>
-						  </button>
+			
+							<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50" id="amount">
+								<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+									<div class="flex-w flex-sb-m p-b-15">
+										<div class="flex-w flex-m m-r-20 m-tb-5">
+											<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>				
+											<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-20 trans-04 pointer m-tb-5" onclick="couponApply()">
+													Apply coupon
+											</div>
+										</div>
+										<div>
+											<h4>Coupons:</h4>
+										</div>
+										<div class="flex-w flex-m m-r-20 m-tb-5">
+											<% if (coupon) { %>
+												<% for (let i = 0; i < coupon.length; i++) { %>
+													<div class="card m-2">
+														<span class="p-2"><%= coupon[i].coupon_code %></span>
+													</div>
+												<% } %>
+											<% } %>
+										</div>
+										<div class="mb-3">
+											<% if (message) { %>
+											  <p class="text-danger"><%= message %></p>
+											<% } %>
+										  </div>
+									</div>
+									<h4 class="mtext-109 cl2 p-b-30">
+										Cart Totals
+									</h4>
+			
+									<div class="flex-w flex-t bor12 p-b-13">
+										<div class="size-208">
+											<span class="stext-110 cl2">
+												Subtotal:
+											</span>
+										</div>
+			
+										<div class="size-209">
+											<span class="mtext-110 cl2">
+												$<%= totalamount %>
+											</span>
+										</div>
+									</div>
+			
+									<div class="flex-w flex-t bor12 p-t-15 p-b-30">
+											<div class="size-208 w-full-ssm p-t-27 p-b-33">
+												<span class="stext-110 cl2">
+													Total:
+												</span>
+											</div>
+											<div class="size-208 p-t-27 p-b-33">
+												<span class="mtext-101 cl2" id="displayamnt">
+													<input type="hidden" value="<%= totalamount %>" name="totalamnt" id="totalamnt">
+													$<%= totalamount %>
+												</span>
+											</div>
+										
+											<!-- <div class="size-209 p-t-1">
+												<span class="mtext-110 cl2" id="displayamnt">
+													<input type="hidden" value="<%= totalamount %>" name="totalamnt" id="totalamnt">
+													$<%= totalamount %>
+												</span>
+											</div> -->
+									<button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+										Place Order
+									  </button>
+								</div>
+							</div>
 						</div>
-					  </div>
-					  <div class="flex-w flex-tr w-full-md m-lr-70 mb-5" style="width: 150px;">
-						<a href="/addaddress?userid=<%= userid._id %>">
-						  <button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
-							Add Address
-						  </button>
-						</a>
-					  </div>
 					</div>
-				  </div>
-				  <div class="m-t-20" style="display: flex; justify-content: center; align-items: center;">
-					<input type="hidden" name="amount" value="<%= totalamount %>">
-					<input type="hidden" name="name" value="<%= userid.name %>">
-					<input type="hidden" name="orderid" value="<%= order_id %>">
-			  
-					<div class="size-30 p-t-2" style="justify-content: center; align-items: center;">
-					  <div class="container bg-light mt-5 rounded">
-						<h3 class="text-muted">ADDRESS</h3>
-						<div class="container main-carousel container mb-5 pb-4">
-						  <div class="main-container">
-							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;" checked>
-							  <input type="radio" id="case1" name="mode" value="Cash On Delivery" />
-							  <label for="case1" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
-								<div class="mb-1 mt-1">
-								  <div class="text-sm">
-									<h3><i class="fab fa-ubuntu"></i></h3>
-									<span>C O D</span>
-								  </div>
-								</div>
-							  </label>
-							</div>
-							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;">
-							  <input type="radio" id="case2" name="mode" value="Online Payment" />
-							  <label for="case2" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
-								<div class="mb-1 mt-1">
-								  <div class="text-sm">
-									<h3><i class="fab fa-windows"></i></h3>
-									<span>Card</span>
-								  </div>
-								</div>
-							  </label>
-							</div>
-							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;">
-							  <input type="radio" id="case3" name="mode" value="Wallet" />
-							  <label for="case3" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
-								<div class="mb-1 mt-1">
-								  <div class="text-sm">
-									<h3><i class="fab fa-apple"></i></h3>
-									<span>Wallet</span>
-								  </div>
-								</div>
-							  </label>
-							</div>
-						  </div>
-						</div>
-					  </div>
-					  <div class="mb-3">
-						<% if (message) { %>
-						  <p class="text-danger"><%= message %></p>
-						<% } %>
-					  </div>
-					  <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
-						Place Order
-					  </button>
-					</div>
-				  </div>
+						<!-- <div id="amount">
+							
+							<h5>Amount: $ <span id="displayamnt"><%= totalamount %></span> </h5>
+						</div>					   -->
 				</div>
-			  </form>
-			  
-                
-		</div>
+			</form>
 	</section>	
 	
 	
@@ -261,9 +364,7 @@ $(document).ready(function(){
 							// window.open("/","_self")
 						},
 						"prefill": {
-							"contact":9895299091,
 							"name": ""+res.name+"",
-							"email": "userData.email"
 						},
 						"theme": {
 							"color": "#2300a3"

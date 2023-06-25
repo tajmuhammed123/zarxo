@@ -65,7 +65,13 @@
                           </div>
                           <div class="col-md-3">
                             <div class="d-flex justify-content-around mb-1 ">
-                              <a href="/return?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Return Product</a>
+                              <%
+                            if (order.product_status == 'Delivered') {
+                        %>
+                              <a class="btn btn-danger" href="/return?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Return Product</a>
+                              <% }else { %>
+                                <a class="btn btn-danger" href="/cancel?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Cancel Product</a>
+                              <% } %>
                             </div>
                           </div>
                         </div>

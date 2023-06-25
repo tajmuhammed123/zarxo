@@ -51,10 +51,12 @@ const { v4: uuidv4 } = require('uuid');
         total_price: total_price
       };            
 
-      let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$inc:{cart_amount: total_price}});
+      let cart = await Cart.findOne({ user_id: req.session.user_id });
+
+      
 
       if (!cart) {
-        cart = new Cart({ user_id: req.session.user_id, cart_amount: total_price});
+        cart = new Cart({ user_id: req.session.user_id});
       }
 
       cart.product.push(cartItem);
@@ -112,7 +114,6 @@ const deleteCartProduct = async (req, res) => {
 
     const prdData = await Cart.findOne({ user_id: userid, 'product._id': id } )
     console.log(prdData.product[0].product_price);
-    await Cart.findOneAndUpdate({ user_id: userid }, { $inc:{cart_amount: -prdData.product[0].product_price } })
 
 
     await Cart.updateOne(
@@ -163,15 +164,15 @@ const updateCart = async (req, res) => {
     const updatedCartData = await Cart.findOne({ user_id: userData });
     const updatedProduct = updatedCartData.product.find((product) => product.product_id === proId);
     const updatedQuantity = updatedProduct.product_quantity;
-    var price = updatedQuantity * productData.product_price;
+    var price = parseInt(updatedQuantity * productData.product_price);
     
     if(productData.product_offer){
       const proId = req.body.product;
       const productData = await Products.findOne({ _id: proId });
-      product_price= (productData.product_offer * productData.product_price)/100
+      var product_price= parseInt((productData.product_offer * productData.product_price)/100)
       price=updatedQuantity * product_price
+      
     }
-    await Cart.findOneAndUpdate({ user_id: userData }, { $inc:{cart_amount: product_price } })
 
     await Cart.updateOne(
       { user_id: userData, 'product.product_id': proId },
@@ -325,21 +326,18 @@ const updateCoupon=async(req,res)=>{
       message=null
       const userid=req.session.user_id
       const cartData=await Cart.findOne({user_id:userid})
-      if(cartData.cart_amount==null || cartData.cart_amount==0){
-        const cart= await Cart.findOne({user_id:userid})
-        cart.product.forEach((product) => {
-          cartData.cart_amount += product.total_price;
-      });
-      }
-
-      await Cart.findOneAndUpdate({user_id:userid},{ $set:{cart_amount:cartData.cart_amount} })
+      const cart= await Cart.findOne({user_id:userid})
+      const coupon=await Coupon.find({})
+      let cart_amount=0
+      cart.product.forEach((product) => {
+        cart_amount += product.total_price;
+    })
       console.log('jk');
       const userData = await User.findOne({ _id: userid });
       const title='Payment'
-      console.log(cartData.cart_amount);
       const randomId = uuidv4();
-      console.log();
-      res.render('payment',{ userid:userData, message, totalamount:cartData.cart_amount, cart:cartData, order_id:randomId, title, session:userid })
+      console.log(cartData);
+      res.render('payment',{ userid:userData, message, totalamount:cart_amount, cart:cartData, order_id:randomId, title, session:userid, coupon:coupon })
     }catch(err){
       console.log(err.message);
     }

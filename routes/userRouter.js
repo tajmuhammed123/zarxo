@@ -95,8 +95,6 @@ user_route.get('/logout',auth.isLogin, userController.userLogout);
 
 user_route.get('/wallet',auth.isLogin, userController.loadWallet);
 
-user_route.post('/wallet', userController.addWallet);
-
 user_route.get('/lowsort', userController.ascendingFilter);
 
 user_route.get('/highsort', userController.descendingFilter);

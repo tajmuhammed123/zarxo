@@ -23,13 +23,14 @@ const razorpayInstance = new Razorpay({
 
 const orderHistory=async(req,res)=>{
     try{
+
     const id = req.session.user_id;
     const orderData = await Order.findOne({ customer_id: id });
     const custData = await User.findOne({_id:id})
     const cartData = await Cart.findOne({user_id:id})
     const custName = custData.name
     console.log(orderData);
-      res.render('orderhistory',{ order:orderData, name:custName, session:id, cart:cartData})
+      res.render('orderhistory',{ order:orderData, name:custName, session:id, cart:cartData, title:'Order History'})
     }catch(err){
       console.log(err.message);
     }
@@ -191,12 +192,12 @@ const orderHistory=async(req,res)=>{
 
   const createOrder = async (req, res) => {
     try {
-      console.log(req.body.totalamnt);
+      console.log("Total Amount", req.body.totalamnt);
       const userid = req.session.user_id;
       const cartData = await Cart.findOne({ user_id: userid });
       const customer = await User.findOne({ _id: userid });
       const amount = parseFloat(req.body.totalamnt);
-      const amont = cartData.cart_amount*100;
+      const amont = req.body.totalamnt*100;
       const addressid = req.body.address;
       const orderid = req.body.orderid;
       const addressData = await User.findOne(
@@ -217,7 +218,7 @@ const orderHistory=async(req,res)=>{
       if (req.body.mode === 'Online Payment') {
         const options = {
           amount: amont,
-          currency: 'INR',
+          currency: 'USD',
           receipt: 'razorUser@gmail.com'
         };
         console.log(options)
@@ -248,8 +249,7 @@ const orderHistory=async(req,res)=>{
       } else if (req.body.mode === 'Wallet') {
         const wallet = await Wallet.findOne({ user_id: userid });
         console.log(wallet.wallet_amount);
-        console.log(cartData.cart_amount);
-        if (wallet.wallet_amount >= cartData.cart_amount) {
+        if (wallet.wallet_amount >= amount) {
           console.log('kjhg');
           if (cartData && Array.isArray(cartData.product)) {
             for (const cartItem of cartData.product) {
@@ -314,12 +314,12 @@ const orderHistory=async(req,res)=>{
             { user_id: userid },
             {
               $inc: {
-                wallet_amount: -cartData.cart_amount
+                wallet_amount: -amount
               }
             }
           );
           let wallet_history = {
-            transaction_amount: '-$' + cartData.cart_amount
+            transaction_amount: '-$' + amount
           };
           wallet.wallet_history.push(wallet_history);
           await wallet.save();

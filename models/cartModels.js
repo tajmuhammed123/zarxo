@@ -48,6 +48,7 @@ const cartSchema = mongoose.Schema({
     },
     cart_amount:{
         type:Number,
+        default:0
     },
 
 })
