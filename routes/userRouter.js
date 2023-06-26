@@ -111,9 +111,7 @@ user_route.get('/deleteaddress', userController.deleteAddress);
 
 user_route.get('/orderdetails',auth.isLogin, userController.loadOrderDetails);
 
-user_route.post('/downloadinvoice', userController.generatePdf);
-
-user_route.get('/download', userController.loadDownload);
+user_route.get('/downloadinvoice', userController.downloadInvoice);
 
 user_route.get('/forget',userController.forgetLoad)
 

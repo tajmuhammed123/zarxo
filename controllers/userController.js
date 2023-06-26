@@ -10,12 +10,15 @@ const Category=require('../models/categoreyModels')
 const Banner=require('../models/bannerModels')
 const Wishlist=require('../models/wishlistModels')
 const bcrypt = require("bcrypt");
-const fs= require('fs')
-const pdf=require('pdf-creator-node')
-const path=require('path')
-const randomstring =require('randomstring') 
+const fs = require('fs');
+const path = require('path');
+const pdf=require('puppeteer')
+const ejs = require('ejs');
+const puppeteer = require('puppeteer');
+const randomstring =require('randomstring')
 const nodemailer = require('nodemailer')
 const config= require('../config/config')
+
 
 // ------------------------ SECURE PASSWORD ------------------------ //
 
@@ -77,7 +80,6 @@ const insertUser = async (req, res) => {
 
 
     if (userData) {
-      await Dashboard.updateOne( {}, { $inc: {total_users:1} });
       sendVerifyMail(req.body.name, req.body.email, userData._id);
       return res.status(200).json({ message: "Registration Success" });
     } else {
@@ -660,107 +662,44 @@ const loadOrderDetails=async(req,res)=>{
   }
 }
 
-const generatePdf = async (req, res) => {
+const downloadInvoice=async(req,res)=>{
   try {
-    console.log('khjgf');
-    const html = fs.readFileSync(path.join(__dirname, '../views/user/template.ejs'), 'utf-8');
-    const filename = Math.random() + '_doc' + '.pdf';
 
-
-    const prod = {
-      name: req.body.name,
-      description: req.body.description,
-      unit: req.body.unit,
-      quantity: req.body.quantity,
-      price: req.body.price,
-      total: req.body.quantity * req.body.price,
-      imgurl: req.body.imgurl,
-      username: req.body.username,
-      mob: req.body.mob,
-      email: req.body.email,
-      date: req.body.date,
-      id: req.body.id,
-      amount:req.body.amount
-
+    const id=req.query.id
+    const userid=req.session.user_id
+    const orderData = await Order.findOne({ customer_id: userid });
+    const productData = orderData.product_details.find(
+      (product) => product._id.toString() === id
+    );
+    const userData=await User.findOne({_id:userid})
+    console.log('dfs');
+    console.log(productData);
+    const data = {
+      orderData:productData,
+      user:userData
     };
 
-    let subtotal = prod.total;
-    const tax = (subtotal * 20) / 100;
-    const grandtotal = subtotal - tax;
+    const filepathName = path.resolve(__dirname, '../views/user/template.ejs');
+    const html = fs.readFileSync(filepathName).toString();
+    const ejsData = ejs.render(html, data);
+    console.log('Generating PDF...');
 
-    const obj = {
-      // prodlist: [prod],      
-      name: req.body.name,
-      description: req.body.description,
-      unit: req.body.unit,
-      quantity: req.body.quantity,
-      price: req.body.price,
-      total: req.body.quantity * req.body.price,
-      imgurl: req.body.imgurl,
-      username: req.body.username,
-      mob: req.body.mob,
-      email: req.body.email,
-      date: req.body.date,
-      id: req.body.id,
-      amount:req.body.amount,
-      subtotal: subtotal,
-      tax: tax,
-      gtotal: grandtotal,
-      prdcts: [prod]
-    };
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
 
-    console.log(obj);
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
 
-    const options = {
-      format: 'A3',
-      orientation: 'portrait',
-      border: '8mm',
-      header: {
-        height: '15mm',
-        contents: '<h4 style="color: red; font-size: 20; font-weight: 800; text-align: center;">CUSTOMER INVOICE</h4>'
-      },
-      footer: {
-        height: '20mm',
-        contents: {
-          first: 'Cover page',
-          2: 'Second page',
-          default: '<span style="color: #444;">page</span>/<span>pages</span>',
-          last: 'Last Page'
-        }
-      }
-    };
+    const pdfBytes = await page.pdf({ format: 'Letter' });
+    await browser.close();
 
-    const document = {
-      html: html,
-      data: {
-        products: obj
-      },
-      path: './docs/' + filename
-    };
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=Invoice.pdf');
 
-    pdf.create(document, options)
-      .then(result => {
-        console.log(result);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    res.send(pdfBytes);
 
-    const filepath = filename;
-    console.log(filepath);
-    res.redirect('/download?filepath=' + encodeURIComponent(filepath));
-  } catch (err) {
-    console.log(err.message);
-  }
-};
-
-const loadDownload=async(req,res)=>{
-  try{
-    console.log('jkhgfd');
-    const filepath = req.query.filepath;
-      res.render('download', { path: filepath })
-  }catch(err){
-    console.log(err.message);
+    console.log('PDF file generated successfully.');
+  } catch (error) {
+    console.log(error.message);
   }
 }
 
@@ -931,8 +870,7 @@ module.exports ={
     editAddress,
     deleteAddress,
     loadOrderDetails,
-    generatePdf,
-    loadDownload,
+    downloadInvoice,
     sentResetPassword,
     forgetLoad,
     forgetVerify,

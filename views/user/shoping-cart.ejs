@@ -65,7 +65,7 @@
 								</a>
 								</td>
 								<td class="column-2"><%= product.product_name %></td>
-								<td class="column-3">$<%= product.product_price %></td>
+								<td class="column-3">₹ <%= product.product_price %></td>
 								<td class="column-4" style="text-transform: uppercase;"><%= product.product_brand %></td>
 								<td class="column-5">
 								  <div class="wrap-num-product flex-w m-l-auto m-r-0">
@@ -81,7 +81,7 @@
 									</div>
 								  </div>
 								</td>
-								<td data-label="Total" class="column-6 ec-cart-pro-subtotal"><span>$<%= product.total_price %></span></td>
+								<td data-label="Total" class="column-6 ec-cart-pro-subtotal"><span>₹ <%= product.total_price %></span></td>
 							  </tr>
 							  <% }
 							  %>
@@ -117,7 +117,7 @@
 		  
 					  <div class="size-209 p-t-1">
 						<span class="mtext-110 cl2 total">
-						  $<%= total.toFixed(2) %>
+							₹ <%= total.toFixed(2) %>
 						</span>
 					  </div>
 					</div>

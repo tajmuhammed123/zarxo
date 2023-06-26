@@ -6,7 +6,6 @@ const Products = require("../models/productModels");
 const Category=require('../models/categoreyModels')
 const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
-const Dashboard=require('../models/dashboardModels')
 const Banner=require('../models/bannerModels')
 const Offer=require('../models/offerModels')
 const bcrypt = require("bcrypt");
@@ -89,27 +88,68 @@ const loadDashboard = async (req, res) => {
     var id = req.session.admin_id;
     const users= await User.find({is_admin:0})
     console.log(users.length);
-    const dashboard=await Dashboard.find({})
     const products=await Products.find({id_disable:false})
     const orders= await Order.find({})
+    const orderCount = await Order.aggregate([
+      {
+        $unwind: "$product_details"
+      },
+      {
+        $match: {
+          "product_details.product_status": "Delivered"
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 }
+        }
+      }
+    ]);
     
-    if(dashboard.length==0){
-      console.log('null');
-      const dataDashboard = new Dashboard({
-        total_users : users.length,
+    const totalOrderCount = orderCount.length > 0 ? orderCount[0].count : 0;
+    
 
-      })
-      await dataDashboard.save()
-    }
-    await Dashboard.updateOne({
-      total_users: users.length,
-      total_products:products.length
-    })
+    const weeklySalesCursor = Order.aggregate([
+      {
+        $unwind: "$product_details"
+      },
+      {
+        $match: {
+          "product_details.product_status": "Delivered"
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%d-%m-%Y", date: "$product_details.deliver_date" } },
+          sales: { $sum: "$product_details.product_price" }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      },
+      {
+        $limit: 7
+      }
+    ]);
+    
+    const weeklySales = await weeklySalesCursor.exec();
+    console.log(weeklySalesCursor);
+    
+    const dates = weeklySales.map(item => item._id);
+    const sales = weeklySales.map(item => item.sales);
+    const salesSum = (weeklySales.reduce((accumulator, item) => accumulator + item.sales, 0)).toFixed(2);
+    const total_users = await User.countDocuments({ is_admin: 0 });
+    const total_products = await Products.countDocuments({ id_disable: false });
+
+    console.log(sales,dates);
     //const userData = await User.findById({ _id: req.session.admin_id });
 
-    const dashboardData=await Dashboard.find({})
+    const cods=await Order.countDocuments({'product_details.payment_method':'Cash On Delivery'})
+    const wallets=await Order.countDocuments({'product_details.payment_method':'Wallet'})
+    const cards=await Order.countDocuments({'product_details.payment_method':'Online Payment'})
     const adminData = await User.findById({ _id: req.session.admin_id });
-    res.render("dashboard", { admin: adminData, users:users, dashboardData:dashboardData, orders:orders });
+    res.render("dashboard", { admin: adminData, users:users,cods,wallets,cards,ordercount:totalOrderCount,salesSum, orders:orders, sales, dates,total_products,total_users });
   } catch (err) {
     console.log(err.message);
   }
@@ -183,7 +223,6 @@ const addProduct = async (req, res) => {
     const adminData = await User.findOne({ _id:adminid });
     const productsData = await products.save();
     if (productsData) {
-      await Dashboard.updateOne( {}, { $inc: {total_products:1} });
       res.redirect('/product-details')
       console.log("success");
     } else {
@@ -254,14 +293,15 @@ const editProductImage = async (req, res) => {
     const productFiles = req.files.map((file) => file.filename);
     const adminId = req.session.admin_id;
 
+    const fileBuffer = req.file.buffer;
+    const mimeType = mime.lookup(req.file.originalname);
+
     if (!mimeType || !mimeType.startsWith('image/')) {
-      return res.render("addproduct", {
+      return res.render("editproducts", {
         message: "Invalid file format. Please upload an image.",
         admin: adminData,
       });
     }
-
-    console.log(productFiles);
 
     await Products.findByIdAndUpdate(
       { _id: productId },
@@ -286,112 +326,6 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-// const loadAddUser = async (req, res) => {
-//   try {
-//     const id = req.session.admin_id
-//     message = null;
-//     const adminData = await User.findOne({ _id:id })
-//     res.render("adduser", { admin: adminData, message });
-//   } catch (err) {
-//     console.log(err.message);
-//   }
-// };
-
-// const addUser = async (req, res) => {
-//   try {
-//     const id = req.session.admin_id
-//     const adminData = await User.findOne({ _id:id })
-//     const spassword = await securePassword(req.body.password);
-
-//     const existingUser = await User.findOne({ email: req.body.email });
-//     if (existingUser) {
-//       return res.render("adduser", {
-//         message: "Email already registered",
-//         admin: adminData,
-//       });
-//     }
-
-//     if (!req.body.name || req.body.name.trim().length === 0) {
-//       return res.render("adduser", {
-//         message: "Please enter a valid name",
-//         admin: adminData,
-//       });
-//     }
-
-//     const user = new User({
-//       name: req.body.name,
-//       email: req.body.email,
-//       mobile: req.body.mob,
-//       username: req.body.username,
-//       password: spassword,
-//       is_admin: 0,
-//     });
-
-//     const userData = await user.save();
-
-//     if (userData) {
-//       console.log("success");
-//       res.render("adduser", {
-//         message: "Registration Success",
-//         admin: adminData,
-//       });
-//     } else {
-//       res.render("adduser", {
-//         message: "Registration Failed",
-//         admin: adminData,
-//       });
-//     }
-//   } catch (err) {
-//     console.log(err.message);
-//   }
-// };
-
-// const editUser = async (req, res) => {
-//   try {
-//     const adminid = req.session.admin_id
-//     const id = req.query.id;
-//     const userData = await User.findById({ _id: id });
-
-//     if (userData) {
-//       console.log(userData);
-//       const adminData = await User.findOne({ _id:adminid });
-//       res.render("editusers", { user: userData, admin: adminData });
-//     } else {
-//       res.redirect("/admin/user-details");
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-
-// const updateUser = async (req, res) => {
-//   try {
-//     const userData = await User.findByIdAndUpdate(
-//       { _id: req.query.id },
-//       {
-//         $set: {
-//           name: req.body.name,
-//           email: req.body.email,
-//           mobile: req.body.mob,
-//           username: req.body.username,
-//         },
-//       }
-//     );
-//     console.log(userData);
-//     res.redirect("/admin/user-details");
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
-// const deleteUser = async (req, res) => {
-//   try {
-//     const id = req.query.id;
-//     await User.deleteOne({ _id: id });
-//     res.redirect("/admin/user-details");
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 
 const enableProduct = async (req, res) => {
   try {
@@ -437,10 +371,11 @@ const loadOrderAddress=async(req,res)=>{
     const addid= req.query.addid
     const userid=req.query.id
     const adminid = req.session.admin_id
+    const orderData = await Order.findOne({ customer_id: userid });
     const adminData = await User.findOne({ _id:adminid });
     const customer = await User.findOne({ _id: userid });
     const add= customer.address.find((addr) => addr._id == addid)
-    res.render('order-address',{address:add, admin: adminData })
+    res.render('order-address',{address:add, admin: adminData, order:orderData })
   } catch (err) {
     console.log(err.message);
   }
@@ -685,43 +620,70 @@ const editCoupon = async (req, res) => {
 
 // ------------------------ SALES REPORT ------------------------ //
 
+const loadReport=async(req,res)=>{
+  try {
+      const admin_id=req.session.admin_id
+      const orders=await Order.aggregate([
+        { $unwind:'$product_details' },
+        {$match:{"product_details.product_status": "Delivered" } }
+      ])
+      console.log(orders);
+      res.render('reportPage',{orders, admin:admin_id})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 const saleReport = async (req, res) => {
   try {
     const adminid=req.session.admin_id
     const admin=await User.findById({_id:adminid})
-    const orders= await Order.find({})
-    const months0106 = [];
-    const months0612 = [];
+    const to =new Date()
+    const day=parseInt(req.query.day)
+    const from = new Date(to.getTime() - day * 24 * 60 * 60 * 1000);
+    console.log(typeof(day));
     
-    for (let i = 0; i < orders.length; i++) {
-      for (let j = 0; j < orders[i].product_details.length; j++) {
-        const dateArray = orders[i].product_details[j].order_date.split('-');
-        const month = parseInt(dateArray[1]);
-    
-        if (month >= 1 && month <= 6) {
-          months0106.push(orders[i].product_details[j]);
-        } else if (month >= 6 && month <= 12) {
-          months0612.push(orders[i].product_details[j]);
+    const orderData=await Order.aggregate([
+      { $unwind:'$product_details' },
+      {$match:{"product_details.product_status": "Delivered","product_details.deliver_date":{$gte:from, $lte:to} } }
+    ])
+    console.log(orderData);
+    const totalEarnings = await Order.aggregate([
+      { $unwind: '$product_details' },
+      {
+        $match: {
+          'product_details.product_status': 'Delivered',
+          'product_details.deliver_date': { $gte: from, $lte: to }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$product_details.product_price' }
         }
       }
-    }
+    ]);
     
-    console.log(months0106); // order dates from month 01 to 06
-    console.log(months0612); // order dates from month 06 to 12
+    const earnings = totalEarnings.length > 0 ? totalEarnings[0].total : 0;
+    console.log('Total earnings:', earnings);    
+    const usercount = await User.countDocuments({ is_admin: 0 });
+    const productcount = await Products.countDocuments({ id_disable: false });
+    const ordercount = await Order.countDocuments({ "product_details.product_status": "Delivered" });
     
-    const dashboard = await Dashboard.find({});
+    console.log(usercount);
     const data = {
-      dashboard: dashboard,
       admin:admin,
-      // orders:orders
-      uptojune:months0106,
-      afterjune:months0612
+      orderData:orderData,
+      usercount:usercount,
+      earnings:earnings,
+      ordercount:ordercount,
+      productcount:productcount,
+      day:day
     };
 
     const filepathName = path.resolve(__dirname, '../views/admin/salereport.ejs');
     const html = fs.readFileSync(filepathName).toString();
     const ejsData = ejs.render(html, data);
-
     console.log('Generating PDF...');
 
     const browser = await puppeteer.launch({ headless: 'new' });
@@ -732,25 +694,19 @@ const saleReport = async (req, res) => {
     const pdfBytes = await page.pdf({ format: 'Letter' });
     await browser.close();
 
-    const randomFilename = generateRandomFilename(); // Generate a random filename here
-    const filePath = path.resolve(__dirname, `../docs/${randomFilename}.pdf`);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
 
-    fs.writeFileSync(filePath, pdfBytes);
+    res.send(pdfBytes);
 
     console.log('PDF file generated successfully.');
-    console.log(randomFilename);
-    res.redirect('/admin/dashboard');
   } catch (err) {
     console.log('Error:', err.message);
   }
 };
 
-// Function to generate a random filename
-const generateRandomFilename = () => {
-  const randomString = Math.random().toString(36).substring(7); // Generate a random string
-  const timestamp = Date.now(); // Get the current timestamp
-  return `file_${timestamp}_${randomString}`;
-};
+// ------------------------ BANNER CONTROLLERS ------------------------ //
+
 const loadAddBanner=async(req,res)=>{
   try{
     const admin=req.session.admin_id
@@ -760,8 +716,6 @@ const loadAddBanner=async(req,res)=>{
     console.log(err.message);
   }
 }
-
-// ------------------------ BANNER CONTROLLERS ------------------------ //
 
 const addBanner = async (req, res) => {
   try {
@@ -925,6 +879,7 @@ module.exports = {
   editCoupon,
   loadeditCategorey,
   editCategorey,
+  loadReport,
   saleReport,
   loadAddBanner,
   addBanner,

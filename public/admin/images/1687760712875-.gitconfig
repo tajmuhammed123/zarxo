@@ -1,0 +1,12 @@
+[user]
+	email = muhammedtaj7@gmail.com
+	name = tajmuhammed123
+	password = tajmuhammed313
+[usre]
+	name = tajmuhammed123
+[core]
+	editor = nano
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true

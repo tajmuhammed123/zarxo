@@ -93,6 +93,8 @@ admin_route.put('/editcategory',adminController.editCategorey)
 
 // ------------------------ REPORT ------------------------ //
 
+
+admin_route.get('/report',auth.isLogin,adminController.loadReport)
 admin_route.get('/pdfdownload',auth.isLogin,adminController.saleReport)
 
 // ------------------------ BANNER ------------------------ //

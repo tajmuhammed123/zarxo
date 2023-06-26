@@ -30,7 +30,11 @@
                               class="img-fluid" alt="Phone">
                           </div>
                           <div class="col-md-3">
-                            <button id="invoicedownload">Download Invoice</button>
+                            <%
+                              if(order.product_status=='Delivered'){ %>
+                                <a href="/downloadinvoice?id=<%= order._id %>"><button id="invoicedownload" class="btn btn-primary">Download Invoice</button></a>
+                              <%}
+                            %>
                           </div>
                         </div>
                         <% let total %>
@@ -79,14 +83,15 @@
                     </div>
       
                   <div class="d-flex justify-content-between mb-5">
-                    <p class="text-muted mb-0" style="text-transform: uppercase;">Recepits Voucher : <%= order._id %></p>
+                    <p class="text-muted mb-0" style="text-transform: uppercase;">ORDER DATE : <%= order.order_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                    </p>
                     <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery Charges</span> Free</p>
                   </div>
                 </div>
                 <div class="card-footer border-0 px-4 py-5"
                   style="background-color: #000000; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                   <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total 
-                    paid  : <span class="h2 mb-0 m-l-15">  $<%= order.product_price %></span></h5>
+                    paid  : <span class="h2 mb-0 m-l-15">  ₹ <%= order.product_price %></span></h5>
                 </div>
               </div>
             </div>
@@ -144,45 +149,18 @@
 	<script src="js/map-custom.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
-
+<!-- 
   <script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
     <script>
         $(document).on('click', '#invoicedownload', function(e) {
           e.preventDefault();
           console.log('sadsfgdhf');
           $.ajax({
-            method: "POST",
-            url: "/downloadinvoice",
-            dataType: 'json',
-            data: {
-              name: "<%= order.product_name %>",
-              description: "<%= order.product_brand %>",
-              unit: "pack",
-              quantity: '<%= order.product_quantity %>',
-              price: '<%= order.product_price %>',
-              imgurl: "<%= order.product_img %>",
-              username: "<%= user.name %>",
-              mob: "<%= user.mobile %>",
-              email: "<%= user.email %>",
-              date: "<%= order.order_date %>",
-              id: "<%= order._id %>",
-              amount:"<%= order.amount %>"
-            },
+            method: "GET",
+            url: "",
             success: function(response) {
               console.log(response);
               alertify.success(response.status);
-              var timestamp = new Date().getTime();
-              var filepath = response.filepath;
-              // Create a temporary download link
-              var downloadLink = document.createElement('a');
-              downloadLink.href = URL.createObjectURL(response);
-              downloadLink.download = 'invoice.pdf';
-              downloadLink.style.display = 'none';
-              document.body.appendChild(downloadLink);
-              downloadLink.click();
-              document.body.removeChild(downloadLink);
-
-              var redirectUrl = "/download?path=" + encodeURIComponent(filepath);
             window.location.href = redirectUrl;
             },
             error: function(error) {
@@ -191,7 +169,7 @@
             }
           });
         });
-        </script>
+        </script> -->
         
 
 </body>

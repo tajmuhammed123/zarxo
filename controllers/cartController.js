@@ -66,7 +66,7 @@ const { v4: uuidv4 } = require('uuid');
       if (savedCart) {
         const userid=req.session.user_id
         const cartData=await Cart.findOne({ user_id:userid })
-        res.render("product-detail", { message: "Success", product: productData, userData: userData, session, cart:cartData });
+        res.render("product-detail", { message: "Success", product: productData, userData: userData, session, cart:cartData, title:'Product Details' });
       }
     } catch (error) {
       console.log(error.message);
@@ -365,6 +365,7 @@ const updateCoupon=async(req,res)=>{
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
+      const cartData = await Cart.findOne({ user_id: userId })
   
       const newAddress = {
         firstName: req.body.firstName,
@@ -382,7 +383,7 @@ const updateCoupon=async(req,res)=>{
   
       console.log(user);
   
-      res.render('payment',{userid:user});
+      res.render('payment',{userid:user, title:'Payment', cart:cartData});
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error' });

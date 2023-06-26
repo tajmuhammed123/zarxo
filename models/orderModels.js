@@ -63,7 +63,7 @@ const productSchema= mongoose.Schema({
     },
     product_price: {
 
-        type:String,
+        type:Number,
         required:true
     },
     product_img: {
@@ -78,7 +78,7 @@ const productSchema= mongoose.Schema({
     },
     product_quantity: {
 
-        type:String,
+        type:Number,
         required:true
     },
     product_brand: {
@@ -91,17 +91,18 @@ const productSchema= mongoose.Schema({
         default:'Ordered'
     },
     order_date: {
-        type:String,
+        type:Date,
+        default:Date.now
     },
     payment_method:{
         type:String,
         required:true
     },
-    amount:{
-        type:String
-    },
     order_id:{
         type:String
+    },
+    deliver_date:{
+        type:Date
     },
     address: [addressSchema]
 })

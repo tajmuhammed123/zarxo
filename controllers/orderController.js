@@ -6,7 +6,6 @@ const Products=require('../models/productModels')
 const User = require("../models/usermodals");
 const Order=require('../models/orderModels')
 const Wallet=require('../models/walletModels')
-const Dashboard=require('../models/dashboardModels')
 const Coupon=require('../models/couponModels')
 
 // ------------------------ RAZORPAY ------------------------ //
@@ -50,6 +49,8 @@ const orderHistory=async(req,res)=>{
       const paymentMode= orderdata.product_details[0].payment_method
   
       console.log(paymentMode);
+      const date=new Date()
+      console.log(date);
   
       await Order.updateOne(
         {
@@ -58,37 +59,13 @@ const orderHistory=async(req,res)=>{
         },
         {
           $set: {
-            'product_details.$.product_status': productStatus
+            'product_details.$.product_status': productStatus,
+
           }
         }
       );
 
       if(productStatus=='Delivered'){
-
-        if(paymentMode=='Cash On Delivery'){
-          const dashboard = await Dashboard.updateOne(
-            {},
-            {
-              $inc: {
-                items_sold: 1,
-                cod: 1,
-                total_earnings: productPrice,
-              }
-            }
-          );
-          console.log(dashboard);          
-        }else if(paymentMode=='Wallet' || paymentMode=='Online Payment'){
-          console.log('online');
-          const dashboard=await Dashboard.updateMany({},
-            {
-              $inc: {
-                items_sold: 1,
-                total_earnings: productPrice,
-                online:1
-              }
-            })
-            console.log(dashboard);
-        }
         await Order.updateOne(
           {
             customer_id: id,
@@ -96,9 +73,11 @@ const orderHistory=async(req,res)=>{
           },
           {
             $set: {
-              'product_details.$.product_status': productStatus
+              'product_details.$.product_status': productStatus,
+              'product_details.$.deliver_date': date
+  
             }
-          }
+          },{ upsert: true }
         );
       }
   
@@ -209,16 +188,12 @@ const orderHistory=async(req,res)=>{
       customer.used_coupon.push(code)
       console.log(req.body.mode);
       console.log(req.body.address);
-  
-      const currentDate = new Date();
-      const formattedDate = currentDate.toISOString();
-      console.log(currentDate);
       console.log(orderid);
   
       if (req.body.mode === 'Online Payment') {
         const options = {
           amount: amont,
-          currency: 'USD',
+          currency: 'INR',
           receipt: 'razorUser@gmail.com'
         };
         console.log(options)
@@ -261,9 +236,7 @@ const orderHistory=async(req,res)=>{
                 product_size: cartItem.product_size,
                 product_quantity: cartItem.product_quantity,
                 product_brand: cartItem.product_brand,
-                order_date: formattedDate,
                 payment_method: req.body.mode,
-                amount: req.body.amount,
                 addressId: addressid,
                 order_id: orderid,
                 address: {}
@@ -286,7 +259,7 @@ const orderHistory=async(req,res)=>{
               }
   
               let order = await Order.findOneAndUpdate(
-                { customer_id: req.session.user_id },
+                { customer_id: req.session.user_id, customer_name:customer.name },
                 { $push: { product_details: orderItem } },
                 { new: true, upsert: true }
               );
@@ -324,20 +297,7 @@ const orderHistory=async(req,res)=>{
           wallet.wallet_history.push(wallet_history);
           await wallet.save();
   
-          await Dashboard.updateMany(
-            {},
-            {
-              $inc: {
-                items_sold: cartData.product.length,
-                total_earnings: req.body.amount,
-                online: cartData.product.length
-              }
-            },
-            { new: true }
-          );
-  
           console.log('hjkgh');
-          console.log(currentDate);
           await Cart.deleteOne({ user_id: userid });
           const add = customer.address.find(addr => addr._id == addressid);
           console.log(add);
@@ -357,9 +317,7 @@ const orderHistory=async(req,res)=>{
               product_size: cartItem.product_size,
               product_quantity: cartItem.product_quantity,
               product_brand: cartItem.product_brand,
-              order_date: formattedDate,
               payment_method: req.body.mode,
-              amount: req.body.amount,
               addressId: addressid,
               order_id: orderid,
               address: {}
@@ -389,17 +347,6 @@ const orderHistory=async(req,res)=>{
 
             console.log(order);
           }
-          await Dashboard.updateMany(
-            {},
-            {
-              $inc: {
-                items_sold: cartData.product.length,
-                total_earnings: req.body.amount,
-                cod: cartData.product.length
-              }
-            },
-            { new: true }
-          );
         } else {
           console.log('Cart data not found or is invalid');
         }
@@ -416,8 +363,6 @@ const orderHistory=async(req,res)=>{
             { new: true }
           );
         }
-  
-        console.log(currentDate);
         await Cart.deleteOne({ user_id: userid });
         const add = customer.address.find(addr => addr._id == addressid);
         console.log(addressData);
@@ -439,14 +384,10 @@ const orderHistory=async(req,res)=>{
       const orderid = req.body.orderid
       console.log('jkhgfd');
       console.log(req.body.mode);
-      const amnt= (req.body.amount)/100
-      const currentDate = new Date();
-      const formattedDate = currentDate.toISOString();
       const addressData = await User.findOne(
         { _id: userid, 'address._id': addressid },
         { 'address.$': 1 }
       );
-      console.log(currentDate);
 
         if (cartData && Array.isArray(cartData.product)) {
           for (const cartItem of cartData.product) {
@@ -458,9 +399,7 @@ const orderHistory=async(req,res)=>{
               product_size: cartItem.product_size,
               product_quantity: cartItem.product_quantity,
               product_brand: cartItem.product_brand,
-              order_date: formattedDate,
               payment_method: req.body.mode,
-              amount: req.body.amount,
               addressId: addressid,
               order_id: orderid,
               address: {}
@@ -508,20 +447,7 @@ const orderHistory=async(req,res)=>{
             },
             { new: true }
           );
-        }
-        
-        console.log(amnt);
-        await Dashboard.updateMany(
-          {},
-          {
-            $inc: {
-              items_sold: cartData.product.length,
-              total_earnings: amnt,
-              online: cartData.product.length
-            }
-          },
-          { new: true }
-        );            
+        }          
 
         await Cart.deleteOne({ user_id: userid });
         res.status(200).send({ success: true});

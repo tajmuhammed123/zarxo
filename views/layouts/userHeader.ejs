@@ -52,7 +52,7 @@
 			<div class="top-bar">
 				<div class="content-topbar flex-sb-m h-full container">
 					<div class="left-top-bar">
-						Free shipping for standard order over $100
+						Free shipping for standard order over ₹ 500
 					</div>
 
 					<div class="right-top-bar flex-w h-full">
@@ -180,7 +180,7 @@
 			<ul class="topbar-mobile">
 				<li>
 					<div class="left-top-bar">
-						Free shipping for standard order over $100
+						Free shipping for standard order over ₹ 500
 					</div>
 				</li>
 
@@ -281,7 +281,7 @@
 										</a>
 
 										<span class="header-cart-item-info">
-											<%= cartl.product_quantity %> x $<%= cartl.product_price %>
+											<%= cartl.product_quantity %> x ₹<%= cartl.product_price %>
 										</span>
 									</div>
 								</li>
@@ -292,7 +292,7 @@
 
 						<div class="w-full">
 							<div class="header-cart-total w-full p-tb-40">
-								Total: $<%= total.toFixed(2) %>
+								Total: ₹ <%= total.toFixed(2) %>
 							</div>
 						</div>
 						<% } else { %>
