@@ -111,7 +111,7 @@ user_route.get('/deleteaddress', userController.deleteAddress);
 
 user_route.get('/orderdetails',auth.isLogin, userController.loadOrderDetails);
 
-user_route.get('/downloadinvoice', userController.downloadInvoice);
+user_route.get('/downloadinvoice',auth.isLogin, userController.downloadInvoice);
 
 user_route.get('/forget',userController.forgetLoad)
 
@@ -121,7 +121,7 @@ user_route.get('/forget-password',userController.forgetPasswordLoad)
 
 user_route.post('/forget-password',userController.resetPassword)
 
-user_route.get('/wishlist',userController.loadWishlist)
+user_route.get('/wishlist',auth.isLogin,userController.loadWishlist)
 
 user_route.post('/addwishlist',auth.isLogin,userController.addWishlist)
 
