@@ -842,6 +842,27 @@ const addWishlist=async(req,res)=>{
     }
 }
 
+const addReview=async(req,res)=>{
+  try {
+      const name = req.body.name
+      const content=req.body.review
+      const star=req.body.rating
+      const id=req.query.id
+      console.log(id);
+      await Products.findByIdAndUpdate(id ,{$push:{
+        product_review:{
+          user_name:name,
+          review:content,
+          star:star
+        }
+      }},{ new: true, upsert: true })
+
+      res.redirect('/product-detail')
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 
 // ------------------------ EXPORTS ------------------------ //
 
@@ -877,7 +898,8 @@ module.exports ={
     forgetPasswordLoad,
     resetPassword,
     loadWishlist,
-    addWishlist
+    addWishlist,
+    addReview
 }
 
 

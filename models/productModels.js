@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+const reviewSchema=mongoose.Schema({
+    user_name:{
+        type:String,
+        required:true
+    },
+    review:{
+        type:String,
+        required: true
+    },
+    star:{
+        type:Number
+    }
+})
+
 const products=mongoose.Schema({
 
 product_name:{
@@ -44,7 +58,8 @@ product_stock:{
 },
 product_offer:{
     type:Number
-}
+},
+product_review:[reviewSchema]
 
 });
 

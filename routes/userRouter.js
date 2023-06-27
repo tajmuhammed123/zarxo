@@ -125,6 +125,7 @@ user_route.get('/wishlist',userController.loadWishlist)
 
 user_route.post('/addwishlist',auth.isLogin,userController.addWishlist)
 
+user_route.post('/addreview',auth.isLogin,userController.addReview)
 
 
 module.exports = user_route;
