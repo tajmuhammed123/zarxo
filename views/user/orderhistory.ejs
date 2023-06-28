@@ -65,7 +65,12 @@
                           </div>
                           <div class="col-md-3">
                             <div class="d-flex justify-content-around mb-1 ">
-                              <a href="/cancel?orderid=<%= orderlist._id %>">Cancel Product</a>
+
+                              <% 
+                                if(orderlist.product_status != 'Canceled'){%>
+                                  <a class="btn btn-danger" href="/cancel?orderid=<%= orderlist._id %>">Cancel Product</a>
+                                <%}
+                              %>
                             </div>
                           </div>
                 

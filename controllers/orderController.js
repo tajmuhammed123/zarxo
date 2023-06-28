@@ -93,20 +93,45 @@ const orderHistory=async(req,res)=>{
         const userid=req.session.user_id
           const orderid = req.query.orderid
           console.log(orderid);
-          const product = await Order.findById(orderid )
-          if(product.payment_method!='Cash On Delivery'){
+          const order = await Order.findOne({ customer_id: userid,'product_details._id': orderid},{
+            'product_details.$': 1
+          })
+          console.log(order);
+          if(order.product_details[0].payment_method!='Cash On Delivery'){
             const wallet = await Wallet.findOne({ user_id: userid });
+
+            const amount=(order.product_details[0].product_price) * (order.product_details[0].product_quantity)
 
             await Wallet.updateOne(
               { user_id: userid },
               {
                 $inc: {
-                  wallet_amount: order.product_details[0].product_price
+                  wallet_amount: amount
                 }
               }
             );
+
+            let wallet_history = {
+              transaction_amount: '+ ₹ ' + amount
+            };
+            
+            console.log(wallet_history);
+            
+            wallet.wallet_history.push(wallet_history);
+            await wallet.save();
+
           }
-          await Order.findByIdAndUpdate({ _id:orderid }, { $set: { product_status: 'Canceled' } })
+          await Order.updateOne(
+            {
+              customer_id: userid,
+              'product_details._id': orderid
+            },
+            {
+              $set: {
+                'product_details.$.product_status': 'Canceled',
+    
+              }
+            },{ new: true })
           res.redirect('/orderhistory')
     } catch (error) {
       console.log(error.message);
@@ -118,10 +143,9 @@ const orderHistory=async(req,res)=>{
       const orderid = req.query.orderid;
       const daysThreshold = 14;
   
-      const order = await Order.findOne({
-        customer_id: req.session.user_id,
-        'product_details._id': orderid
-      });
+      const order = await Order.findOne({ customer_id: userid,'product_details._id': orderid},{
+        'product_details.$': 1
+      })
   
       if (!order) {
         return res.status(404).json({ error: 'Order not found' });
@@ -152,20 +176,18 @@ const orderHistory=async(req,res)=>{
       );
       const wallet = await Wallet.findOne({ user_id: userid });
 
+      const amount=(order.product_details[0].product_price) * (order.product_details[0].product_quantity)
       await Wallet.updateOne(
         { user_id: userid },
         {
           $inc: {
-            wallet_amount: order.product_details[0].product_price
+            wallet_amount: amount
           }
         }
       );
-
-      const orderData= await Order.findOne({ customer_id: userid,'product_details._id': orderid})
-      console.log(orderData);
       
       let wallet_history = {
-        transaction_amount: '+' + orderData.product_details[0].product_price
+        transaction_amount: '+ ₹ ' + amount
       };
       
       console.log(wallet_history);
@@ -306,7 +328,7 @@ const orderHistory=async(req,res)=>{
             }
           );
           let wallet_history = {
-            transaction_amount: '-$' + amount
+            transaction_amount: '- ₹ ' + amount
           };
           wallet.wallet_history.push(wallet_history);
           await wallet.save();

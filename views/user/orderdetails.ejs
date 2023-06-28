@@ -72,9 +72,19 @@
                               <%
                             if (order.product_status == 'Delivered') {
                         %>
-                              <a class="btn btn-danger" href="/return?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Return Product</a>
+                              <% 
+                              if(orderlist.product_status != 'Return'){%>
+                                <a class="btn btn-danger" href="/return?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Return Product</a>
+                              <%}
+                            %>
+                  
                               <% }else { %>
-                                <a class="btn btn-danger" href="/cancel?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Cancel Product</a>
+
+                                <% 
+                                if(orderlist.product_status != 'Canceled'){%>
+                                  <a class="btn btn-danger" href="/cancel?orderid=<%= order._id %>&&orderdate=<%= order.order_date %>">Cancel Product</a>
+                                <%}
+                              %>
                               <% } %>
                             </div>
                           </div>
