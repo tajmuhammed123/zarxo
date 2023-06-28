@@ -393,6 +393,7 @@ const searchProduct = async (req, res) => {
     var session = req.session.user_id;
     const banner= await Banner.find({})
     const category = await Category.find({ id_disable: false });
+    const title='Home'
 
     if (session) {
       const cartData = await Cart.findOne({ user_id: session });
@@ -405,7 +406,7 @@ const searchProduct = async (req, res) => {
 
       const userData = await Products.find({ product_name: { $regex: '.*' + search + '.*', $options: 'i' } });
 
-      res.render('home', { products: userData, cart: cartData, session, banner:banner, category:category });
+      res.render('home', { products: userData, cart: cartData, session, banner:banner, category:category, title });
     } else {
       const cart = null;
       session = null;
@@ -418,7 +419,7 @@ const searchProduct = async (req, res) => {
 
       const userData = await Products.find({ product_name: { $regex: '.*' + search + '.*', $options: 'i' } });
 
-      res.render('home', { products: userData, cart, session, banner:banner, category:category });
+      res.render('home', { products: userData, cart, session, banner:banner, category:category, title });
     }
   } catch (error) {
     console.log(error.message);
@@ -465,6 +466,7 @@ const loadWallet = async (req, res) => {
 
 const ascendingFilter=async(req,res)=>{
   try{
+    const title='Home'
     if(req.session.user_id){
       const session=req.session.user_id
       const category = await Category.find({ id_disable: false });
@@ -478,7 +480,7 @@ const ascendingFilter=async(req,res)=>{
     const cartData = await Cart.findOne({ user_id: id })
     const userData = await User.findById({_id : req.session.user_id});
     console.log(id);
-    res.render('home',{products:productData, user:userData, session, cart: cartData, banner:banner, category:category});
+    res.render('home',{products:productData, user:userData, session, cart: cartData, banner:banner, category:category, title});
     }else{
       const session=null
       const category = await Category.find({ id_disable: false });
@@ -488,7 +490,7 @@ const ascendingFilter=async(req,res)=>{
         id_disable: false,
         product_category: { $in: categoryIds }
       }).sort({product_price:1})
-      res.render('home',{products:productData, session, cart: null, banner:banner, category:category})
+      res.render('home',{products:productData, session, cart: null, banner:banner, category:category, title})
     }
 
   }catch(err){
@@ -499,6 +501,7 @@ const ascendingFilter=async(req,res)=>{
 
 const descendingFilter=async(req,res)=>{
   try{
+    const title='Home'
     if(req.session.user_id){
       const session=req.session.user_id
       const category = await Category.find({ id_disable: false });
@@ -512,7 +515,7 @@ const descendingFilter=async(req,res)=>{
     const cartData = await Cart.findOne({ user_id: id })
     const userData = await User.findById({_id : req.session.user_id});
     console.log(id);
-    res.render('home',{products:productData, user:userData, session, cart: cartData, banner:banner, category:category});
+    res.render('home',{products:productData, user:userData, session, cart: cartData, banner:banner, category:category, title});
     }else{
       const session=null
       const category = await Category.find({ id_disable: false });
@@ -522,7 +525,7 @@ const descendingFilter=async(req,res)=>{
         id_disable: false,
         product_category: { $in: categoryIds }
       }).sort({product_price: -1})
-      res.render('home',{products:productData, session, cart: null, banner:banner, category:category})
+      res.render('home',{products:productData, session, cart: null, banner:banner, category:category, title})
     }
 
   }catch(err){
@@ -538,7 +541,7 @@ const loadMore=async(req,res)=>{
       const category = await Category.find({ id_disable: false });
       const categoryIds = category.map(c => c.product_category); 
       const banner= await Banner.find({})
-    const title='Wallet'
+    const title='Home'
       const session=req.session.user_id
       const productData = await Products.find({
         id_disable: false,
@@ -553,13 +556,14 @@ const loadMore=async(req,res)=>{
       console.log('hjk');
       const banner= await Banner.find({})
       const session=null
+      const title='Home'
       const category = await Category.find({ id_disable: false });
       const categoryIds = category.map(c => c.product_category); 
       const productData = await Products.find({
         id_disable: false,
         product_category: { $in: categoryIds }
       })
-      res.render('home',{products:productData, session, cart: null, banner:banner, category:category})
+      res.render('home',{products:productData, session, cart: null, banner:banner, category:category, title})
     }
 
   }catch(err){

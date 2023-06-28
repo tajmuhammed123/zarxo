@@ -90,8 +90,22 @@ const orderHistory=async(req,res)=>{
 
   const cancelProduct=async(req,res)=>{
     try {
+        const userid=req.session.user_id
           const orderid = req.query.orderid
           console.log(orderid);
+          const product = await Order.findById(orderid )
+          if(product.payment_method!='Cash On Delivery'){
+            const wallet = await Wallet.findOne({ user_id: userid });
+
+            await Wallet.updateOne(
+              { user_id: userid },
+              {
+                $inc: {
+                  wallet_amount: order.product_details[0].product_price
+                }
+              }
+            );
+          }
           await Order.findByIdAndUpdate({ _id:orderid }, { $set: { product_status: 'Canceled' } })
           res.redirect('/orderhistory')
     } catch (error) {
