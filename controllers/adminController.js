@@ -686,27 +686,20 @@ const saleReport = async (req, res) => {
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
 
-    const chromePath = await puppeteer.executablePath()
-    (async () => {
-      const browser = await puppeteer.launch({
-        executablePath: chromePath,
-        headless: 'new'
-      });
-      const page = await browser.newPage();
-    
-      await page.setContent(ejsData, { waitUntil: 'networkidle0' });
-    
-      const pdfBytes = await page.pdf({ format: 'Letter' });
-      await browser.close();
-    
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
-    
-      res.send(pdfBytes);
-    
-      console.log('PDF file generated successfully.');
-    })();
-    
+    const browser = await puppeteer.launch({ headless: true, devtools: true, dumpio: true });
+    const page = await browser.newPage();
+
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+
+    const pdfBytes = await page.pdf({ format: 'Letter' });
+    await browser.close();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
+
+    res.send(pdfBytes);
+
+    console.log('PDF file generated successfully.');
   } catch (err) {
     console.log('Error:', err.message);
   }
