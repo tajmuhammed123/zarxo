@@ -684,7 +684,7 @@ const saleReport = async (req, res) => {
     console.log('nothing');
     const page = await browser.newPage();
     console.log('something');
-    await page.setContent(ejsData, { waitUntil: 'domcontentloaded' });
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
     
     const pdfBytes = await page.pdf({ format: 'Letter' });
     await browser.close();
