@@ -1,3 +1,7 @@
+const User = require("../models/usermodals");
+const Products = require("../models/productModels");
+const Order=require('../models/orderModels')
+
 const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
