@@ -685,7 +685,7 @@ const saleReport = async (req, res) => {
     const html = fs.readFileSync(filepathName).toString();
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
-
+    
     (async () => {
       const browser = await puppeteer.launch({
         executablePath: '/home/ubuntu/.cache/puppeteer/chrome',
@@ -697,14 +697,15 @@ const saleReport = async (req, res) => {
     
       const pdfBytes = await page.pdf({ format: 'Letter' });
       await browser.close();
+    
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
+    
+      res.send(pdfBytes);
+    
+      console.log('PDF file generated successfully.');
     })();
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
-
-    res.send(pdfBytes);
-
-    console.log('PDF file generated successfully.');
+    
   } catch (err) {
     console.log('Error:', err.message);
   }
