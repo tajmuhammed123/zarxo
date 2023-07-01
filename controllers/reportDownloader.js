@@ -54,7 +54,7 @@ const saleReport = async (req, res) => {
       
       const browser = await puppeteer.launch({
         executablePath: '/usr/bin/chromium-browser', // Specify the path to the Chromium executable
-        headless: true // Set headless mode as needed
+        headless: 'new' // Set headless mode as needed
       });
       console.log('nothing');
       const page = await browser.newPage();
