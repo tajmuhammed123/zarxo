@@ -53,8 +53,7 @@ const saleReport = async (req, res) => {
       console.log('Generating PDF...');
       
       const browser = await puppeteer.launch({
-        executablePath: '/usr/bin/chromium-browser', // Specify the path to the Chromium executable
-        headless: 'new' // Set headless mode as needed
+        headless: false // Set headless mode as needed
       });
       console.log('nothing');
       const page = await browser.newPage();
