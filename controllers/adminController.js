@@ -685,10 +685,11 @@ const saleReport = async (req, res) => {
     const html = fs.readFileSync(filepathName).toString();
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
-    
+
+    const chromePath = await puppeteer.executablePath()
     (async () => {
       const browser = await puppeteer.launch({
-        executablePath: '/home/ubuntu/.cache/puppeteer/chrome',
+        executablePath: chromePath,
         headless: 'new'
       });
       const page = await browser.newPage();
