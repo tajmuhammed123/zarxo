@@ -687,16 +687,19 @@ const saleReport = async (req, res) => {
     console.log('Generating PDF...');
 
     const browser = await puppeteer.launch();
+    console.log('newpage');
     const page = await browser.newPage();
-
+    console.log('wait untill');
     await page.setContent(ejsData, { waitUntil: 'networkidle0' });
-
+    console.log('format');
     const pdfBytes = await page.pdf({ format: 'Letter' });
+    console.log('close');
     await browser.close();
-
+    console.log('set header');
     res.setHeader('Content-Type', 'application/pdf');
+    console.log('atachment');
     res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
-
+    console.log('pdfbytes');
     res.send(pdfBytes);
 
     console.log('PDF file generated successfully.');
