@@ -686,7 +686,11 @@ const saleReport = async (req, res) => {
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
 
-    const browser = await puppeteer.launch({ headless: true, devtools: true, dumpio: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox'],
+    });
+    
     const page = await browser.newPage();
 
     await page.setContent(ejsData, { waitUntil: 'networkidle0' });
