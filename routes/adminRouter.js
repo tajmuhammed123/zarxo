@@ -32,6 +32,7 @@ admin_route.set('views','./views/admin')
 
 const adminController=require('../controllers/adminController');
 const orderController=require('../controllers/orderController');
+const reportController=require('../controllers/reportDownloader');
 
 // ------------------------ LOGIN ------------------------ //
 
@@ -95,7 +96,7 @@ admin_route.put('/editcategory',adminController.editCategorey)
 
 
 admin_route.get('/report',auth.isLogin,adminController.loadReport)
-admin_route.get('/pdfdownload',auth.isLogin,adminController.saleReport)
+admin_route.get('/pdfdownload',auth.isLogin,reportController.saleReport)
 
 // ------------------------ BANNER ------------------------ //
 
