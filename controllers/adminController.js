@@ -636,74 +636,66 @@ const loadReport=async(req,res)=>{
 
 const saleReport = async (req, res) => {
   try {
-    const adminid=req.session.admin_id
-    const admin=await User.findById({_id:adminid})
-    const to =new Date()
-    const day=parseInt(req.query.day)
-    const from = new Date(to.getTime() - day * 24 * 60 * 60 * 1000);
-    console.log(typeof(day));
+    const adminid = req.session.admin_id;
+    const admin = await User.findById(adminid).lean();
     
-    const orderData=await Order.aggregate([
-      { $unwind:'$product_details' },
-      {$match:{"product_details.product_status": "Delivered","product_details.deliver_date":{$gte:from, $lte:to} } }
-    ])
-    console.log(orderData);
-    const totalEarnings = await Order.aggregate([
-      { $unwind: '$product_details' },
-      {
-        $match: {
-          'product_details.product_status': 'Delivered',
-          'product_details.deliver_date': { $gte: from, $lte: to }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$product_details.product_price' }
-        }
-      }
+    const to = new Date();
+    const day = parseInt(req.query.day);
+    const from = new Date(to.getTime() - day * 24 * 60 * 60 * 1000);
+    console.log(typeof day);
+    
+    const [orderData, totalEarnings, usercount, productcount, ordercount] = await Promise.all([
+      Order.aggregate([
+        { $unwind: '$product_details' },
+        { $match: { 'product_details.product_status': 'Delivered', 'product_details.deliver_date': { $gte: from, $lte: to } } }
+      ]),
+      Order.aggregate([
+        { $unwind: '$product_details' },
+        { $match: { 'product_details.product_status': 'Delivered', 'product_details.deliver_date': { $gte: from, $lte: to } } },
+        { $group: { _id: null, total: { $sum: '$product_details.product_price' } } }
+      ]),
+      User.countDocuments({ is_admin: 0 }),
+      Products.countDocuments({ id_disable: false }),
+      Order.countDocuments({ 'product_details.product_status': 'Delivered' })
     ]);
     
     const earnings = totalEarnings.length > 0 ? totalEarnings[0].total : 0;
-    console.log('Total earnings:', earnings);    
-    const usercount = await User.countDocuments({ is_admin: 0 });
-    const productcount = await Products.countDocuments({ id_disable: false });
-    const ordercount = await Order.countDocuments({ "product_details.product_status": "Delivered" });
+    console.log('Total earnings:', earnings);
     
-    console.log(usercount);
     const data = {
-      admin:admin,
-      orderData:orderData,
-      usercount:usercount,
-      earnings:earnings,
-      ordercount:ordercount,
-      productcount:productcount,
-      day:day
+      admin: admin,
+      orderData: orderData,
+      usercount: usercount,
+      earnings: earnings,
+      ordercount: ordercount,
+      productcount: productcount,
+      day: day
     };
-
+    
     const filepathName = path.resolve(__dirname, '../views/admin/salereport.ejs');
     const html = fs.readFileSync(filepathName).toString();
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
-
+    
     const browser = await puppeteer.launch({
       executablePath: '/usr/bin/chromium-browser', // Specify the path to the Chromium executable
       headless: true // Set headless mode as needed
     });
-    
+    console.log('nothing');
     const page = await browser.newPage();
-
-    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
-
+    console.log('something');
+    await page.setContent(ejsData, { waitUntil: 'domcontentloaded' });
+    
     const pdfBytes = await page.pdf({ format: 'Letter' });
     await browser.close();
-
+    
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
-
+    
     res.send(pdfBytes);
-
+    
     console.log('PDF file generated successfully.');
+    
   } catch (err) {
     console.log('Error:', err.message);
   }
