@@ -53,7 +53,8 @@ const saleReport = async (req, res) => {
       console.log('Generating PDF...');
       
       const browser = await puppeteer.launch({
-        headless: false // Set headless mode as needed
+        headless: true,
+        args: ['--no-sandbox'] // Set headless mode as needed
       });
       console.log('nothing');
       const page = await browser.newPage();
