@@ -81,7 +81,6 @@ const insertUser = async (req, res) => {
 
     if (userData) {
       sendVerifyMail(req.body.name, req.body.email, userData._id);
-      sendOTPMail(req.body.name, req.body.email, otp);
       return res.status(200).json({ message: "Registration Success" });
     } else {
       return res.status(200).json({ message: "Registration Failed" });
@@ -105,40 +104,6 @@ const userVerify= async(req,res)=>{
   const title= 'Profile'
   res.render('userprofile',{user:userData, cart:cartData, title, session:userid,  message:"Check your Mail" })
 }
-
-const sendOTPMail = async (name, email, otp) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: config.emailUser,
-        pass: config.emailPassword
-      }
-    });
-
-    const mailOptions = {
-      from: config.emailUser,
-      to: email,
-      subject: 'OTP Verification Email',
-      html: `<p>Hi ${name}, please click <a href="http://localhost:3000/otp">here</a> to verify and enter your verification email. This is your OTP: ${otp}</p>`
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email has been sent:', info.response);
-    console.log(otp);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const OTPload=async(req,res)=>{
-  try {
-    
-  } catch (error) {
-    console.log(error.message);
-  }
-}
-
 
 
 const sendVerifyMail= async(name, email, user_id)=>{
