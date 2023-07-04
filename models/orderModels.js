@@ -98,9 +98,6 @@ const productSchema= mongoose.Schema({
         type:String,
         required:true
     },
-    order_id:{
-        type:String
-    },
     deliver_date:{
         type:Date
     },
@@ -121,6 +118,9 @@ const orderSchema = mongoose.Schema({
 
         type:String,
         required:true
+    },
+    order_id:{
+        type:String
     },
     product_details: [productSchema],
 

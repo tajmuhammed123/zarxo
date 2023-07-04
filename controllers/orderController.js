@@ -24,12 +24,26 @@ const orderHistory=async(req,res)=>{
     try{
 
     const id = req.session.user_id;
-    const orderData = await Order.findOne({ customer_id: id });
+    const orderData = await Order.find({ customer_id: id });
     const custData = await User.findOne({_id:id})
     const cartData = await Cart.findOne({user_id:id})
     const custName = custData.name
     console.log(orderData);
       res.render('orderhistory',{ order:orderData, name:custName, session:id, cart:cartData, title:'Order History'})
+    }catch(err){
+      console.log(err.message);
+    }
+  }
+const orderProductsFilter=async(req,res)=>{
+    try{
+    const product_id=req.query.prid
+    const id = req.session.user_id;
+    const orderData = await Order.findOne({ _id: product_id });
+    const custData = await User.findOne({_id:id})
+    const cartData = await Cart.findOne({user_id:id})
+    const custName = custData.name
+    console.log(orderData);
+      res.render('orderProducts',{ order:orderData, name:custName, session:id, cart:cartData, title:'Order History'})
     }catch(err){
       console.log(err.message);
     }
@@ -221,7 +235,9 @@ const orderHistory=async(req,res)=>{
       );
       
       const code = req.body.coupon;
-      customer.used_coupon.push(code)
+      if(code){
+        customer.used_coupon.push(code)
+      }
       console.log(req.body.mode);
       console.log(req.body.address);
       console.log(orderid);
@@ -263,6 +279,8 @@ const orderHistory=async(req,res)=>{
         if (wallet.wallet_amount >= amount) {
           console.log('kjhg');
           if (cartData && Array.isArray(cartData.product)) {
+            let prds = [];
+          
             for (const cartItem of cartData.product) {
               const orderItem = {
                 product_id: cartItem.product_id,
@@ -274,13 +292,13 @@ const orderHistory=async(req,res)=>{
                 product_brand: cartItem.product_brand,
                 payment_method: req.body.mode,
                 addressId: addressid,
-                order_id: orderid,
                 address: {}
               };
-  
+          
               const selectedAddress = addressData.address.find(
                 addr => addr._id.toString() === addressid
               );
+          
               if (selectedAddress) {
                 orderItem.address = {
                   firstName: selectedAddress.firstName,
@@ -293,15 +311,19 @@ const orderHistory=async(req,res)=>{
                   pincode: selectedAddress.pincode
                 };
               }
-  
-              let order = await Order.findOneAndUpdate(
-                { customer_id: req.session.user_id, customer_name:customer.name },
-                { $push: { product_details: orderItem } },
-                { new: true, upsert: true }
-              );
-  
-              console.log(order);
+          
+              prds.push(orderItem);
             }
+          
+            let order = await new Order({
+              customer_id: req.session.user_id,
+              customer_name: customer.name,
+              order_id: orderid,
+              product_details: prds
+            });
+          
+            console.log(order);
+            await order.save();
           } else {
             console.log('Cart data not found or is invalid');
           }
@@ -344,6 +366,8 @@ const orderHistory=async(req,res)=>{
         }
       } else {
         if (cartData && Array.isArray(cartData.product)) {
+          let prds = [];
+        
           for (const cartItem of cartData.product) {
             const orderItem = {
               product_id: cartItem.product_id,
@@ -355,13 +379,13 @@ const orderHistory=async(req,res)=>{
               product_brand: cartItem.product_brand,
               payment_method: req.body.mode,
               addressId: addressid,
-              order_id: orderid,
               address: {}
             };
-
+        
             const selectedAddress = addressData.address.find(
               addr => addr._id.toString() === addressid
             );
+        
             if (selectedAddress) {
               orderItem.address = {
                 firstName: selectedAddress.firstName,
@@ -374,15 +398,20 @@ const orderHistory=async(req,res)=>{
                 pincode: selectedAddress.pincode
               };
             }
-
-            let order = await Order.findOneAndUpdate(
-              { customer_id: req.session.user_id },
-              { $push: { product_details: orderItem } },
-              { new: true, upsert: true }
-            );
-
-            console.log(order);
+        
+            prds.push(orderItem);
           }
+        
+          let order = await new Order({
+            customer_id: req.session.user_id,
+            customer_name: customer.name,
+            order_id: orderid,
+            product_details: prds
+          });
+        
+          console.log(order);
+          await order.save();
+        
         } else {
           console.log('Cart data not found or is invalid');
         }
@@ -425,49 +454,52 @@ const orderHistory=async(req,res)=>{
         { 'address.$': 1 }
       );
 
-        if (cartData && Array.isArray(cartData.product)) {
-          for (const cartItem of cartData.product) {
-            const orderItem = {
-              product_id: cartItem.product_id,
-              product_name: cartItem.product_name,
-              product_price: cartItem.product_price,
-              product_img: cartItem.product_img,
-              product_size: cartItem.product_size,
-              product_quantity: cartItem.product_quantity,
-              product_brand: cartItem.product_brand,
-              payment_method: req.body.mode,
-              addressId: addressid,
-              order_id: orderid,
-              address: {}
+      if (cartData && Array.isArray(cartData.product)) {
+        let prds = [];
+      
+        for (const cartItem of cartData.product) {
+          const orderItem = {
+            product_id: cartItem.product_id,
+            product_name: cartItem.product_name,
+            product_price: cartItem.product_price,
+            product_img: cartItem.product_img,
+            product_size: cartItem.product_size,
+            product_quantity: cartItem.product_quantity,
+            product_brand: cartItem.product_brand,
+            payment_method: req.body.mode,
+            addressId: addressid,
+            address: {}
+          };
+      
+          const selectedAddress = addressData.address.find(
+            addr => addr._id.toString() === addressid
+          );
+      
+          if (selectedAddress) {
+            orderItem.address = {
+              firstName: selectedAddress.firstName,
+              secondName: selectedAddress.secondName,
+              email: selectedAddress.email,
+              mobNumber: selectedAddress.mobNumber,
+              houseNumber: selectedAddress.houseNumber,
+              city: selectedAddress.city,
+              state: selectedAddress.state,
+              pincode: selectedAddress.pincode
             };
-
-            const selectedAddress = addressData.address.find(
-              addr => addr._id.toString() === addressid
-            );
-            if (selectedAddress) {
-              orderItem.address = {
-                firstName: selectedAddress.firstName,
-                secondName: selectedAddress.secondName,
-                email: selectedAddress.email,
-                mobNumber: selectedAddress.mobNumber,
-                houseNumber: selectedAddress.houseNumber,
-                city: selectedAddress.city,
-                state: selectedAddress.state,
-                pincode: selectedAddress.pincode
-              };
-            }
-          
-  
-            let order = await Order.findOneAndUpdate(
-              { customer_id: req.session.user_id },
-              {
-                $push: {
-                  product_details: orderItem
-                }
-              },
-              { new: true, upsert: true }
-            );
-          }   
+          }
+      
+          prds.push(orderItem);
+        }
+      
+        let order = await new Order({
+          customer_id: req.session.user_id,
+          customer_name: customer.name,
+          order_id: orderid,
+          product_details: prds
+        });
+      
+        console.log(order);
+        await order.save();   
         } else {
           console.log('Cart data not found or is invalid');
         }
@@ -500,22 +532,20 @@ const orderHistory=async(req,res)=>{
       const orderid = req.query.orderid;
       const userid = req.session.user_id;
       console.log(orderid);
-
+      
       const orderProducts = await Order.find({ customer_id: userid });
       console.log(orderProducts);
-      const order = orderProducts.find(order => order.product_details.some(detail => detail.order_id === orderid));
+      const order = orderProducts.find(order => order.order_id === orderid);
       
       if (order) {
-        const products = order.product_details.filter(detail => detail.order_id === orderid);
         const cartData = await Cart.findOne({ user_id: userid });
-        var title='Success'
+        var title = 'Success';
         console.log(order);
-          res.render('success', { order:products,session:orderid, cart:cartData, title })
-      
+        res.render('success', { order: order, session: req.session.user_id, cart: cartData, title });
       } else {
         console.log("Order not found");
-      }   
-
+      }
+      
     }catch(err){
       console.log(err.message);
     }
@@ -525,6 +555,7 @@ const orderHistory=async(req,res)=>{
 
   module.exports = {
     orderHistory,
+    orderProductsFilter,
     productStatus,
     cancelProduct,
     returnProduct,

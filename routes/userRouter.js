@@ -107,6 +107,7 @@ user_route.post('/createOrder', orderController.createOrder);
 user_route.get('/orderdetails',auth.isLogin, userController.loadOrderDetails);
 user_route.get('/downloadinvoice',auth.isLogin, userController.downloadInvoice);
 user_route.get('/orderhistory',auth.isLogin, orderController.orderHistory);
+user_route.get('/producthistorydetail',auth.isLogin, orderController.orderProductsFilter);
 
 // ------------------------ FORGET PASSWORD ------------------------ //
 

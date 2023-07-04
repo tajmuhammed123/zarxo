@@ -20,8 +20,8 @@
 							let total = 0; // Initialize the total variable
 							let prid;
 							if (order) {
-							for (let i = 0; i < order.length; i++) {
-								const orderlist = order[i];
+							for (let i = 0; i < order.product_details.length; i++) {
+								const orderlist = order.product_details[i];
 							%>
 							<div class="card shadow-0 border mb-4">
 							<div class="card-body">
