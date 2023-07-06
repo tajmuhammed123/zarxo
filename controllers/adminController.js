@@ -386,7 +386,7 @@ const loadOrderProducts=async(req,res)=>{
     const userid=req.query.id
     const adminid = req.session.admin_id
     const adminData = await User.findOne({ _id:adminid });
-    const orderData = await Order.findOne({ customer_id: userid });
+    const orderData = await Order.findById(userid);
     console.log(orderData);
     res.render('order-products',{ admin: adminData, order:orderData })
   } catch (err) {

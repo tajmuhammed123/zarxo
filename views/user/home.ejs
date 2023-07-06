@@ -162,7 +162,7 @@
 						<% } %>
 					  <% } else { %>
 						<tr>
-						  <td colspan="5">Products Not found</td>
+						  <td colspan="5">category Not found</td>
 						</tr>
 					  <% } %>
 					  
@@ -419,10 +419,18 @@
 							  </span>
 							</div>
 							<div class="block2-txt-child2 flex-r p-t-3">
-							  <a href="/addwishlist?id=<%= products[i]._id %>" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" id="wishlist">
-								<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-								<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
-							  </a>
+									<% let flag = 0;
+										let wishlogo
+									%>
+									<% for (let j = 0; j < wishdata.length; j++) { %>
+										<% if (wishdata[j] == products[i]._id) { %>
+											<% flag = 1; %>
+										<% } %>
+									<% } %>
+									<% let imageSrc = flag === 1 ? '/images/icons/addedwish.png' : '/images/icons/icon-heart-01.png'; %>
+								<a href="/addwishlist?id=<%= products[i]._id %>" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" id="wishlist">
+									<img class="icon-heart dis-block trans-04" src="<%= imageSrc %>" alt="ICON">
+								</a>								
 							</div>
 						  </div>
 						</div>
@@ -515,7 +523,6 @@
 			var productID = $(this).attr('href').split('=')[1]; // Extract product ID from href
 
 			$(this).on('click', function() {
-
 				$.ajax({
 				method: "POST",
 				url: "/addwishlist",

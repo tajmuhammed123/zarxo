@@ -55,7 +55,6 @@ admin_route.post("/edit_product_image",upload.array('product_img'), adminControl
 // ------------------------ ORDER ------------------------ //
 
 admin_route.get('/orders',auth.isLogin,adminController.loadOrders)
-
 admin_route.get('/orderaddress',auth.isLogin,adminController.loadOrderAddress)
 
 // ------------------------ PRODUCTS ------------------------ //

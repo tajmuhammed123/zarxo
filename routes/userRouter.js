@@ -28,6 +28,7 @@ const auth=require('../middleware/Auth')
 const userController= require('../controllers/userController')
 const cartController=require('../controllers/cartController');
 const orderController = require('../controllers/orderController');
+const errorHandler = require('../middleware/errorHandler')
 
 // ------------------------ LOGIN ------------------------ //
 
@@ -104,8 +105,8 @@ user_route.get('/deleteaddress', userController.deleteAddress);
 // ------------------------ ORDER ------------------------ //
 
 user_route.post('/createOrder', orderController.createOrder);
-user_route.get('/orderdetails',auth.isLogin, userController.loadOrderDetails);
-user_route.get('/downloadinvoice',auth.isLogin, userController.downloadInvoice);
+user_route.get('/orderdetails',auth.isLogin, orderController.loadOrderDetails);
+user_route.get('/downloadinvoice',auth.isLogin, orderController.downloadInvoice);
 user_route.get('/orderhistory',auth.isLogin, orderController.orderHistory);
 user_route.get('/producthistorydetail',auth.isLogin, orderController.orderProductsFilter);
 
@@ -121,6 +122,9 @@ user_route.post('/forget-password',userController.resetPassword)
 user_route.get('/wishlist',auth.isLogin,userController.loadWishlist)
 user_route.post('/addwishlist',auth.isLogin,userController.addWishlist)
 user_route.post('/addreview',auth.isLogin,userController.addReview)
+
+
+user_route.use(errorHandler)
 
 
 module.exports = user_route;

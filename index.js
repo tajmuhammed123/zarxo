@@ -2,9 +2,11 @@ require('./database')
 
 const path=require('path')
 const express=require('express')
+const nocache = require ("nocache")
 
 const app = express()
 
+app.use(nocache())
 const userRouter = require('./routes/userRouter')
 app.use('/',userRouter)
 

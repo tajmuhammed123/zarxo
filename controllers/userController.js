@@ -246,7 +246,7 @@ const updateUser=async(req,res)=>{
 
 // ------------------------ LOAD HOME ------------------------ //
 
-const loadHome = async (req,res)=> {
+const loadHome = async (req,res,next)=> {
 
         try {
           const title='Home'
@@ -265,8 +265,10 @@ const loadHome = async (req,res)=> {
             const id=req.session.user_id
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
+            const wishlistData = await Wishlist.findOne({ customer_id: session });
+            const productIds = Array.from(new Set(wishlistData.product_id)); 
             console.log(id);
-            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner, title:title});
+            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner, title:title, wishdata:productIds});
             }else{
               const banner= await Banner.find({})
               const session=null
@@ -277,12 +279,13 @@ const loadHome = async (req,res)=> {
                 id_disable: false,
                 product_category: { $in: categoryIds }
               }).limit(8);
+              let wishdata=[]
               console.log(banner);
-              res.render('home',{products:productData, session, cart: null, category:category, banner:banner, title:title})
+              res.render('home',{products:productData, session, cart: null, category:category, banner:banner, title:title, wishdata:wishdata})
             }
 
         } catch (error) {
-
+            next(error)
             console.log(error.message);
         }
 }
@@ -647,66 +650,6 @@ const deleteAddress=async(req,res)=>{
   }
 }
 
-// ------------------------ ORDER DETAILS ------------------------ //
-
-const loadOrderDetails=async(req,res)=>{
-  try{
-    const id=req.session.user_id
-    const productid=req.query.productid
-    const user= await User.findById(id)
-    console.log(user);
-    const orderData = await Order.findOne({ customer_id: id });
-    const cartData = await Cart.findOne({ user_id: id })
-    const title='Order'
-    const order = orderData.product_details.find((product) => product._id.toString() === productid);
-    console.log(order);
-      res.render('orderdetails',{ order:order, user:user, cart:cartData, title, session:id })
-  }catch(err){
-    console.log(err.message);
-  }
-}
-
-const downloadInvoice=async(req,res)=>{
-  try {
-
-    const id=req.query.id
-    const userid=req.session.user_id
-    const orderData = await Order.findOne({ customer_id: userid });
-    const productData = orderData.product_details.find(
-      (product) => product._id.toString() === id
-    );
-    const userData=await User.findOne({_id:userid})
-    console.log('dfs');
-    console.log(productData);
-    const data = {
-      orderData:productData,
-      user:userData
-    };
-
-    const filepathName = path.resolve(__dirname, '../views/user/template.ejs');
-    const html = fs.readFileSync(filepathName).toString();
-    const ejsData = ejs.render(html, data);
-    console.log('Generating PDF...');
-
-    const browser = await puppeteer.launch({ headless: 'new' });
-    const page = await browser.newPage();
-
-    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
-
-    const pdfBytes = await page.pdf({ format: 'Letter' });
-    await browser.close();
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=Invoice.pdf');
-
-    res.send(pdfBytes);
-
-    console.log('PDF file generated successfully.');
-  } catch (error) {
-    console.log(error.message);
-  }
-}
-
 // ------------------------ FORGET PASSWORD ------------------------ //
 
 const sentResetPassword = async (name, email, token) => {
@@ -824,12 +767,13 @@ const addWishlist=async(req,res)=>{
         console.log(wishlistData);
         
         if (wishlistData) {
+          console.log('ghjfh');
           const productIds = wishlistData.product_id;
-          const updatedProductIds = productIds.filter((productId) => productId !== productIdToDelete);
-        
-          wishlistData.product_id = updatedProductIds;
+          // const updatedProductIds = productIds.filter((productId) => productId !== productIdToDelete);
+          
+          wishlistData.product_id.pull(productIdToDelete);
           await wishlistData.save();
-          res.status(200).send({ success: false, message: 'Product removed from wishlist.' });
+          res.status(200).send({ success: true, message: 'Product removed from wishlist.' });          
         } else {
           console.log('ghfg');
           await Wishlist.findOneAndUpdate(
@@ -852,7 +796,10 @@ const addReview=async(req,res)=>{
       const content=req.body.review
       const star=req.body.rating
       const id=req.query.id
+      const prid=req.body.prid
       console.log(id);
+      var nn=await Products.findById(id)
+      console.log(nn);
       await Products.findByIdAndUpdate(id ,{$push:{
         product_review:{
           user_name:name,
@@ -861,7 +808,7 @@ const addReview=async(req,res)=>{
         }
       }},{ new: true, upsert: true })
 
-      res.redirect('/product-detail')
+      res.redirect('/orderdetails?productid='+prid)
   } catch (error) {
     console.log(error.message);
   }
@@ -894,8 +841,6 @@ module.exports ={
     loadEditAddress,
     editAddress,
     deleteAddress,
-    loadOrderDetails,
-    downloadInvoice,
     sentResetPassword,
     forgetLoad,
     forgetVerify,

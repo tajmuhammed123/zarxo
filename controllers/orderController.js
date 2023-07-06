@@ -7,6 +7,11 @@ const User = require("../models/usermodals");
 const Order=require('../models/orderModels')
 const Wallet=require('../models/walletModels')
 const Coupon=require('../models/couponModels')
+const fs = require('fs');
+const path = require('path');
+const pdf=require('puppeteer')
+const ejs = require('ejs');
+const puppeteer = require('puppeteer');
 
 // ------------------------ RAZORPAY ------------------------ //
 
@@ -53,16 +58,10 @@ const orderProductsFilter=async(req,res)=>{
 
   const productStatus = async (req, res) => {
     try {
-      const id = req.query.id;
+      const id = req.body.userid;
       const productId = req.body.productID;
       const adminId = req.session.admin_id;
       const productStatus = req.body.product_status;
-
-      const orderdata = await Order.findOne({ customer_id: id,'product_details._id': productId });
-      const productPrice= orderdata.product_details[0].product_price
-      const paymentMode= orderdata.product_details[0].payment_method
-  
-      console.log(paymentMode);
       const date=new Date()
       console.log(date);
   
@@ -101,6 +100,8 @@ const orderProductsFilter=async(req,res)=>{
       console.log(error.message);
     }
   };
+
+  // ------------------------ CANCEL ORDER ------------------------ //
 
   const cancelProduct=async(req,res)=>{
     try {
@@ -151,6 +152,8 @@ const orderProductsFilter=async(req,res)=>{
       console.log(error.message);
     }
   }
+
+  // ------------------------ RETURN ORDER ------------------------ //
 
   const returnProduct = async (req, res) => {
     try {
@@ -440,6 +443,8 @@ const orderProductsFilter=async(req,res)=>{
     }
   };  
 
+  // ------------------------ CARD PAYMENT SAVE ------------------------ //
+
   const onlinePaySuccess=async(req,res)=>{
     try {
       const userid = req.session.user_id;
@@ -525,7 +530,8 @@ const orderProductsFilter=async(req,res)=>{
       console.log(error.message);
     }
   }
-  
+
+  // ------------------------ ORDER SUCCESS PAGE ------------------------ //
 
   const paymentSuccess=async(req,res)=>{
     try{
@@ -550,6 +556,72 @@ const orderProductsFilter=async(req,res)=>{
       console.log(err.message);
     }
   }
+
+// ------------------------ ORDER DETAILS ------------------------ //
+
+const loadOrderDetails=async(req,res)=>{
+  try{
+    const id=req.session.user_id
+    const productid=req.query.productid
+    const user= await User.findById(id)
+    console.log(user);
+    const orderData = await Order.findOne(
+      { customer_id: id, 'product_details._id': productid },
+      { 'product_details.$': 1 }
+    )
+    console.log(id);
+    const cartData = await Cart.findOne({ user_id: id })
+    const title='Order'
+    const order = orderData.product_details.find(
+      product => product._id.toString() === productid
+    );
+    console.log(order);
+      res.render('orderdetails',{ order:order, user:user, cart:cartData, title, session:id })
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+const downloadInvoice=async(req,res)=>{
+  try {
+
+    const id=req.query.id
+    const userid=req.session.user_id
+    const orderData = await Order.findOne({ customer_id: userid });
+    const productData = orderData.product_details.find(
+      (product) => product._id.toString() === id
+    );
+    const userData=await User.findOne({_id:userid})
+    console.log('dfs');
+    console.log(productData);
+    const data = {
+      orderData:productData,
+      user:userData
+    };
+
+    const filepathName = path.resolve(__dirname, '../views/user/template.ejs');
+    const html = fs.readFileSync(filepathName).toString();
+    const ejsData = ejs.render(html, data);
+    console.log('Generating PDF...');
+
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+
+    const pdfBytes = await page.pdf({ format: 'Letter' });
+    await browser.close();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=Invoice.pdf');
+
+    res.send(pdfBytes);
+
+    console.log('PDF file generated successfully.');
+  } catch (error) {
+    console.log(error.message);
+  }
+}
   
 // ------------------------ EXPORTS ------------------------ //
 
@@ -561,5 +633,7 @@ const orderProductsFilter=async(req,res)=>{
     returnProduct,
     createOrder,
     onlinePaySuccess,
-    paymentSuccess
+    paymentSuccess,
+    loadOrderDetails,
+    downloadInvoice,
   }
