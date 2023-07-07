@@ -211,18 +211,17 @@ footer p {
 
 
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 </head>
 
 <body>
-    <script>
-        console.log('jkhgjhfd');
-    </script>
     <div class="my-5 page" size="A4">
-        <div class="p-5">
+        <div class="p-5" id="invoice">
             <section class="top-content bb d-flex justify-content-between">
                 <div class="logo">
                     <img src="" alt="" class="img-fluid">
                 </div>
+                <button id="download">Download</button>
             </section>
 
             <section class="store-user mt-5">
@@ -306,4 +305,23 @@ footer p {
         </div>
     </div>
 
-</body></html>
+</body>
+<script>
+    window.onload = function () {
+    document.getElementById("download")
+        .addEventListener("click", () => {
+            const invoice = this.document.getElementById("invoice");
+            console.log(invoice);
+            console.log(window);
+            var opt = {
+                margin: 1,
+                filename: 'myfile.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(invoice).set(opt).save();
+        })
+}
+</script>
+</html>

@@ -44,23 +44,13 @@ const saleReport = async (req, res) => {
       productcount: productcount,
       day: day
     };
-
-    const filepathName = path.resolve(__dirname, '../views/admin/salereport.ejs');
-    const html = fs.readFileSync(filepathName).toString();
-    const ejsData = ejs.render(html, data);
-    console.log('Generating PDF...');
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
-    const pdfBuffer = await page.pdf({ format: 'A4' });
-    await browser.close();
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
-    res.send(pdfBuffer);
-
-    console.log('PDF file generated successfully.');
+    res.render('salereport',{admin: admin,
+      orderData: orderData,
+      usercount: usercount,
+      earnings: earnings,
+      ordercount: ordercount,
+      productcount: productcount,
+      day: day})
 
   } catch (error) {
     console.error('Error:', error.message);
