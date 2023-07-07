@@ -7,10 +7,6 @@ const path = require('path');
 const ejs = require('ejs');
 const puppeteer = require('puppeteer');
 
-
-
-const pdf = require('html-pdf');
-
 const saleReport = async (req, res) => {
   try {
     const adminid = req.session.admin_id;
@@ -49,31 +45,29 @@ const saleReport = async (req, res) => {
       day: day
     };
 
-    // Render the EJS template with the data
     const filepathName = path.resolve(__dirname, '../views/admin/salereport.ejs');
     const html = fs.readFileSync(filepathName).toString();
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
 
-    // Convert HTML to PDF using html-pdf
-    pdf.create(ejsData, {}).toBuffer((err, buffer) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        res.status(500).send('An error occurred while generating the PDF');
-      } else {
-        // Send the generated PDF file as a download
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
-        res.send(buffer);
-        console.log('PDF file generated successfully.');
-      }
-    });
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+    await browser.close();
 
-  } catch (err) {
-    console.error('Error:', err.message);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
+    res.send(pdfBuffer);
+
+    console.log('PDF file generated successfully.');
+
+  } catch (error) {
+    console.error('Error:', error.message);
     res.status(500).send('An error occurred while generating the PDF');
   }
 };
+
 
 
 
