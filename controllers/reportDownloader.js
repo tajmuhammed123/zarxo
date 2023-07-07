@@ -52,7 +52,10 @@ const saleReport = async (req, res) => {
     const ejsData = ejs.render(html, data);
     console.log('Generating PDF...');
 
-    const options = { format: 'Letter' };
+    const options = {
+      format: 'Letter',
+      phantomPath: require('phantomjs-prebuilt').path
+    };
 
     pdf.create(ejsData, options).toStream((err, stream) => {
       if (err) {
@@ -71,6 +74,7 @@ const saleReport = async (req, res) => {
     console.log('Error:', err.message);
   }
 };
+
 
 
 
