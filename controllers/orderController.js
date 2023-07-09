@@ -159,6 +159,7 @@ const orderProductsFilter=async(req,res)=>{
     try {
       const orderid = req.query.orderid;
       const daysThreshold = 14;
+      const userid=req.session.user_id
   
       const order = await Order.findOne({ customer_id: userid,'product_details._id': orderid},{
         'product_details.$': 1
@@ -171,7 +172,6 @@ const orderProductsFilter=async(req,res)=>{
       const currentDate = new Date();
       const orderDateStr = order.product_details.find(item => item._id.toString() === orderid).order_date;
       const orderDate = new Date(orderDateStr);
-      const userid=req.session.user_id
       const timeDifference = currentDate.getTime() - orderDate.getTime();
       const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
   
