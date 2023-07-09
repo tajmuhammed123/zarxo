@@ -267,6 +267,7 @@
                                 <td>Quantity</td>
                                 <td>Brand</td>
                                 <td>Method</td>
+                                <td>Date</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -282,6 +283,7 @@
                                     <td><%= orderData[i].product_details.product_quantity %></td>
                                     <td><%= orderData[i].product_details.product_brand %></td>
                                     <td><%= orderData[i].product_details.payment_method %></td>
+                                    <td><%= orderData[i].product_details.order_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></td>
                                     </tr>
                                 <%
                                     amount += orderData[i].product_details.product_price * orderData[i].product_details.product_quantity;

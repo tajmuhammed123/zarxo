@@ -274,8 +274,8 @@ footer p {
                         <div class="col-8">
                             <p class="m-0 font-weight-bold"> Note: </p>
                             <p>This is your single order invoice. If you have multiple order, download invoice seperately for each product</p>
-                            <p>Order ID:</p>
-                            <p><%= orderData._id %></p>
+                            <p>Order ID: <%= orderData._id %></p>
+                            <p>Order Date: <%= orderData.order_date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
                         </div>
                         <div class="col-4">
                             <table class="table border-0 table-hover">
