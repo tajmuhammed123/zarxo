@@ -110,7 +110,7 @@
             <div class="col-lg-10 col-xl-8">
               <div class="card p-4" style="border-radius: 10px;">
                 <%
-          if (order.product_status == 'Delivered') {
+          if (order.product_status == 'Delivered' || order.product_status == 'Return') {
             %>
             <form action="/addreview?id=<%= order.product_id %>" class="w-full" method="post">
               <h5 class="mtext-108 cl2 p-b-7">
