@@ -584,40 +584,18 @@ const loadOrderDetails=async(req,res)=>{
 
 const downloadInvoice=async(req,res)=>{
   try {
-
     const id=req.query.id
     const userid=req.session.user_id
-    const orderData = await Order.findOne({ customer_id: userid });
-    const productData = orderData.product_details.find(
-      (product) => product._id.toString() === id
-    );
+    const orderData = await Order.findOne(
+      { customer_id: userid, 'product_details._id': id },
+      { 'product_details.$': 1 }
+    )
+    const order=orderData.product_details[0]
+    console.log(order);
     const userData=await User.findOne({_id:userid})
     console.log('dfs');
-    console.log(productData);
-    const data = {
-      orderData:productData,
-      user:userData
-    };
-
-    const filepathName = path.resolve(__dirname, '../views/user/template.ejs');
-    const html = fs.readFileSync(filepathName).toString();
-    const ejsData = ejs.render(html, data);
-    console.log('Generating PDF...');
-
-    const browser = await puppeteer.launch({ headless: 'new' });
-    const page = await browser.newPage();
-
-    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
-
-    const pdfBytes = await page.pdf({ format: 'Letter' });
-    await browser.close();
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=Invoice.pdf');
-
-    res.send(pdfBytes);
-
-    console.log('PDF file generated successfully.');
+    console.log(orderData);
+    res.render('template',{ orderData:order, user:userData })
   } catch (error) {
     console.log(error.message);
   }

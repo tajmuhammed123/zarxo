@@ -143,8 +143,8 @@ tr td:first-child {
 }
 
 .media img {
-    height: 60px;
-    width: 60px;
+    height: 80px;
+    width: 80px;
 }
 
 .media p {
@@ -219,131 +219,154 @@ footer p {
     </script>
     <div class="my-5 page" size="A4">
         <div class="p-5">
-            <section class="top-content bb d-flex justify-content-between">
-                <div class="logo">
-                    <img src="/admin/images/BLACK LOGO.png" alt="" class="img-fluid">
-                </div>
-            </section>
-
-            <section class="store-user mt-5">
-                <div class="col-10">
-                    <div class="row bb pb-3">
-                        <div class="col-7">
-                            <h2>ZARXO</h2>
-                            <!-- <p class="address"> 777 Brockton Avenue, <br> Abington MA 2351, <br>Vestavia Hills AL </p> -->
-                        </div>
-                        <div class="col-5">
-                            <h2><%= user.name %></h2>
-                            <p class="address"> <%= user.username %>, <br> <%= user.mobile %>, <br><%= user.email %> </p>
+            <button id="download" class="btn btn-primary">Download</button>
+            <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+            <div id="invoice" class="pt-3">
+                <section class="top-content bb d-flex justify-content-between">
+                    <div class="logo">
+                        <img src="/admin/images/BLACK LOGO.png" alt="" class="img-fluid" style="height: 30px;">
+                    </div>
+                </section>
+    
+                <section class="store-user mt-5">
+                    <div class="col-10">
+                        <div class="row bb pb-3">
+                            <div class="col-7">
+                                <h2>ZARXO</h2>
+                                <p class="address"> 3rd Floor, <br> Kinfra, <br>Kakkanchery </p>
+                            </div>
+                            <div class="col-5">
+                                <h2><%= user.name %></h2>
+                                <p class="address"> <%= user.username %>, <br> <%= user.mobile %>, <br><%= user.email %> </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <section class="product-area mt-4">
-                <h5><%= orderData.product_name %></h5>
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <td>Product ID</td>
-                            <td>Price</td>
-                            <td>Brand</td>
-                            <td>Quantity</td>
-                            <td>Payment Method</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                          <td><%= orderData.order_id %></td>
-                          <td><%= orderData.product_price %></td>
-                          <td><%= orderData.product_brand %></td>
-                          <td><%= orderData.product_quantity %></td>
-                          <td><%= orderData.payment_method %></td>
-                        </tr>                       
-
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- <section class="balance-info">
-                <div class="row">
-                    <div class="col-8">
-                        <p class="m-0 font-weight-bold"> Note: </p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. In delectus, adipisci vero est dolore praesentium.</p>
-                    </div>
-                    <div class="col-4">
-                        <table class="table border-0 table-hover">
+                </section>
+    
+                <section class="product-area mt-4">
+                    <h3 class="d-flex justify-content-center py-3">INVOICE</h3>
+                    <table class="table table-hover">
+                        <thead>
                             <tr>
-                                <td>Sub Total:</td>
-                                <td>800$</td>
+                                <td></td>
+                                <td>Product Name</td>
+                                <td>Price</td>
+                                <td>Brand</td>
+                                <td>Quantity</td>
+                                <td>Payment Method</td>
                             </tr>
+                        </thead>
+                        <tbody>
                             <tr>
-                                <td>Tax:</td>
-                                <td>15$</td>
+                              <td class="media img"><img src="/admin/images/<%= orderData.product_img %>" alt="IMG" ></td>
+                              <td><%= orderData.product_name %></td>
+                              <td>₹<%= orderData.product_price %></td>
+                              <td><%= orderData.product_brand %></td>
+                              <td><%= orderData.product_quantity %></td>
+                              <td><%= orderData.payment_method %></td>
                             </tr>
-                            <tr>
-                                <td>Deliver:</td>
-                                <td>10$</td>
-                            </tr>
-                            <tfoot>
+                        </tbody>
+                    </table>
+                </section>
+    
+                <section class="balance-info">
+                    <div class="row">
+                        <div class="col-8">
+                            <p class="m-0 font-weight-bold"> Note: </p>
+                            <p>This is your single order invoice. If you have multiple order, download invoice seperately for each product</p>
+                            <p>Order ID:</p>
+                            <p><%= orderData._id %></p>
+                        </div>
+                        <div class="col-4">
+                            <table class="table border-0 table-hover">
                                 <tr>
-                                    <td>Total:</td>
-                                    <td>825$</td>
+                                    <%
+                                     let amount = orderData.product_price*orderData.product_quantity
+                                    %>
+                                    <td>Paid:</td>
+                                    <td>₹ <%= amount %></td>
                                 </tr>
-                            </tfoot>
-                        </table>
-
-                        Signature 
-
-                        <div class="col-12">
-                            <img src="signature.png" class="img-fluid" alt="">
-                            <p class="text-center m-0"> Director Signature </p>
+                                <tr>
+                                    <td>Tax:</td>
+                                    <td>15$</td>
+                                </tr>
+                                <tr>
+                                    <td>Deliver:</td>
+                                    <td>10$</td>
+                                </tr>
+                                <tfoot>
+                                    <tr>
+                                        <td>Total:</td>
+                                        <td>₹ <%= amount %></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+    
+                            Signature 
+    
+                            <div class="col-12">
+                                <img src="/images/signature.HEIC" class="img-fluid" alt="" style="height: 55px;">
+                                <p class="text-center m-0"> Director Signature </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section> -->
-
-            <!-- Cart BG -->
-            <img src="cart.jpg" class="img-fluid cart-bg" alt="">
-
-            <footer>
-                <hr>
-                <!-- <p class="m-0 text-center">
-                    View THis Invoice Online At - <a href="#!"> invoice/saburbd.com/#868 </a>
-                </p>
-                <div class="social pt-3">
-                    <span class="pr-2">
-                        <i class="fas fa-mobile-alt"></i>
-                        <span>0123456789</span>
-                    </span>
-                    <span class="pr-2">
-                        <i class="fas fa-envelope"></i>
-                        <span>me@saburali.com</span>
-                    </span>
-                    <span class="pr-2">
-                        <i class="fab fa-facebook-f"></i>
-                        <span>/sabur.7264</span>
-                    </span>
-                    <span class="pr-2">
-                        <i class="fab fa-youtube"></i>
-                        <span>/abdussabur</span>
-                    </span>
-                    <span class="pr-2">
-                        <i class="fab fa-github"></i>
-                        <span>/example</span>
-                    </span>
-                </div> -->
-            </footer>
+                </section>
+    
+                <!-- Cart BG -->
+                <!-- <img src="cart.jpg" class="img-fluid cart-bg" alt="">
+    
+                <footer>
+                    <hr>
+                    <p class="m-0 text-center">
+                        Visit Our Site At - <a href="#!"> www.zarxo.online </a>
+                    </p>
+                    <div class="social pt-3">
+                        <span class="pr-2">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>+91 9895299091</span>
+                        </span>
+                        <span class="pr-2">
+                            <i class="fas fa-envelope"></i>
+                            <span>me@saburali.com</span>
+                        </span>
+                        <span class="pr-2">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>/sabur.7264</span>
+                        </span>
+                        <span class="pr-2">
+                            <i class="fab fa-youtube"></i>
+                            <span>/abdussabur</span>
+                        </span>
+                        <span class="pr-2">
+                            <i class="fab fa-github"></i>
+                            <span>/example</span>
+                        </span>
+                    </div>
+                </footer> -->
+            </div>
         </div>
     </div>
 
+</body>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+<script>
+    window.onload = function () {
+    document.getElementById("download")
+        .addEventListener("click", () => {
+            const invoice = this.document.getElementById("invoice");
+            console.log(invoice);
+            console.log(window);
+            var opt = {
+                margin: 1,
+                filename: 'Invoice.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(invoice).set(opt).save();
+        })
+}
+</script>
 
-
-
-
-
-
-
-
-</body></html>
+</html>
