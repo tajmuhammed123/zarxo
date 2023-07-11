@@ -418,20 +418,30 @@
 								₹ <%= products[i].product_price %>
 							  </span>
 							</div>
-							<div class="block2-txt-child2 flex-r p-t-3">
-									<% let flag = 0;
-										let wishlogo
-									%>
-									<% for (let j = 0; j < wishdata.length; j++) { %>
-										<% if (wishdata[j] == products[i]._id) { %>
-											<% flag = 1; %>
+							<% 
+								if(wishdata){%>
+									<div class="block2-txt-child2 flex-r p-t-3">
+										<% let flag = 0;
+											let wishlogo
+										%>
+										<% for (let j = 0; j < wishdata.length; j++) { %>
+											<% if (wishdata[j] == products[i]._id) { %>
+												<% flag = 1; %>
+											<% } %>
 										<% } %>
-									<% } %>
-									<% let imageSrc = flag === 1 ? '/images/icons/addedwish.png' : '/images/icons/icon-heart-01.png'; %>
-								<a href="/addwishlist?id=<%= products[i]._id %>" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" id="wishlist">
-									<img class="icon-heart dis-block trans-04" src="<%= imageSrc %>" alt="ICON">
-								</a>								
-							</div>
+										<% let imageSrc = flag === 1 ? '/images/icons/addedwish.png' : '/images/icons/icon-heart-01.png'; %>
+									<a href="/addwishlist?id=<%= products[i]._id %>" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" id="wishlist">
+										<img class="icon-heart dis-block trans-04" src="<%= imageSrc %>" alt="ICON">
+									</a>								
+									</div>
+								<%}else{%>
+									<div class="block2-txt-child2 flex-r p-t-3">
+									<a href="" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" id="wishlist">
+										<img class="icon-heart dis-block trans-04" src="/images/icons/icon-heart-01.png" alt="ICON">
+									</a>								
+								</div>
+								<%}
+							%>
 						  </div>
 						</div>
 					  </div>

@@ -14,7 +14,7 @@
 		<div class="container">
 			<div class="productdata">
 				<div class="row isotope-grid">
-				  <% if (products.length > 0) {
+				  <% if (products) {
 					for (let i = 0; i < products.length; i++) { %>
 					  <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= products[i].product_category %> <%= products[i].product_brand %>">
 						<div class="block2">
@@ -31,9 +31,8 @@
 							  </span>
 							</div>
 							<div class="block2-txt-child2 flex-r p-t-3">
-							  <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-								<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-								<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+							  <a href="/addwishlist?id=<%= products[i]._id %>" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+								<img class="icon-heart1 dis-block trans-04" src="/images/icons/icon-heart-01.png" alt="ICON">
 							  </a>
 							</div>
 						  </div>
@@ -42,7 +41,7 @@
 					<% }
 				  } else { %>
 					<tr>
-					  <td colspan="5">Products Not found</td>
+					  <td colspan="5">No Products in Wishlist</td>
 					</tr>
 				  <% } %>
 				</div>
@@ -117,19 +116,43 @@
 <!--===============================================================================================-->
 	<script src="vendor/sweetalert/sweetalert.min.js"></script>
 	<script>
-		$('.js-addwish-b2, .js-addwish-detail').on('click', function(e){
+		$('.js-addwish-b2').on('click', function(e){
 			e.preventDefault();
 		});
 
-		$('.js-addwish-b2').each(function(){
+		$('.js-addwish-b2').each(function() {
 			var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
-			$(this).on('click', function(){
-				swal(nameProduct, "is added to wishlist !", "success");
+			var productID = $(this).attr('href').split('=')[1]; // Extract product ID from href
 
-				$(this).addClass('js-addedwish-b2');
-				$(this).off('click');
+			$(this).on('click', function() {
+				$.ajax({
+				method: "POST",
+				url: "/addwishlist",
+				data: {
+					productid: productID // Pass the product ID to the AJAX request
+				},
+				success: function(response) {
+					if (response.success) {
+						swal(nameProduct, "is added to wishlist!", "success");
+						$(this).addClass('js-addedwish-b2');
+						$('#wishrefresh').html($(response).find('#wishrefresh').html());
+					} else {
+						$(this).off('click');
+						$('#wishrefresh').html($(response).find('#wishrefresh').html());
+					}
+				},
+				error: function(error) {
+					console.log(error);
+					alert('Error occurred while searching product');
+				},
+				error: function(error) {
+					console.log(error);
+					alert('Error occurred while searching product');
+				}
+				});
 			});
-		});
+			});
+
 
 		$('.js-addwish-detail').each(function(){
 			var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
@@ -140,6 +163,7 @@
 				$(this).addClass('js-addedwish-detail');
 				$(this).off('click');
 			});
+
 		});
 
 		/*---------------------------------------------*/
@@ -168,9 +192,30 @@
 				ps.update();
 			})
 		});
+	
+	</script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			$(this).css('position','relative');
+			$(this).css('overflow','hidden');
+			var ps = new PerfectScrollbar(this, {
+				wheelSpeed: 1,
+				scrollingThreshold: 1000,
+				wheelPropagation: false,
+			});
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
 	</script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+	<script>
+		
+	</script>
 
 
 </body>

@@ -266,7 +266,13 @@ const loadHome = async (req,res,next)=> {
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             const wishlistData = await Wishlist.findOne({ customer_id: session });
-            const productIds = Array.from(new Set(wishlistData.product_id)); 
+            let productIds
+            if(wishlistData){
+              productIds = Array.from(new Set(wishlistData.product_id)); 
+            }else{
+              productIds = null 
+            }
+            
             console.log(id);
             res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner, title:title, wishdata:productIds});
             }else{
@@ -749,8 +755,16 @@ const loadWishlist=async(req,res)=>{
     const userid=req.session.user_id
 
     const wishlistData = await Wishlist.findOne({ customer_id: userid });
-    const productIds = Array.from(new Set(wishlistData.product_id)); 
-    const products = await Products.find({ _id: { $in: productIds } });
+    let productIds
+    if(wishlistData){
+      productIds = Array.from(new Set(wishlistData.product_id)); 
+    }else{
+      productIds = null 
+    }
+    let products = await Products.find({ _id: { $in: productIds } });
+    if(!productIds){
+      products=null
+    }
     const cartData=await Cart.findOne({ user_id: userid })
       res.render('wishlist',{products:products,session:userid, cart:cartData, title:'Wishlist'})
   } catch (error) {
